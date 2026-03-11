@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DiffApp
 
-## Getting Started
+DiffApp is a free and open-source utility built with **Next.js**, **React**, and **TypeScript**.
 
-First, run the development server:
+It is designed to provide high-precision text comparison and flexible merging capabilities, allowing developers to analyze and synchronize differences between two text sources with ease directly in the browser or as a standalone cross-platform application.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+> **Note:**  
+> This project is currently **under development**.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Main Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+-   **Dual View Modes:** Switch between **Split (Side-by-Side)** and **Unified** views to visualize differences in the way that suits you best.
+-   **High-Precision Highlighting:** Choose between **Word-level** or **Character-level** highlighting to spot even the smallest changes.
+-   **Flexible Merging:** Interactively merge changes block-by-block from left-to-right or right-to-left to build the final result.
+-   **Smart Comparison:** Optional "Ignore Whitespace" toggle to focus only on meaningful code or text changes.
+-   **Integrated Editor & History:** Edit texts on the fly, re-run comparisons instantly, and automatically save your diffs to your local history.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠 Technology Stack
 
-## Learn More
+-   **Framework:** Next.js & React
+-   **Language:** TypeScript
+-   **Styling:** Tailwind CSS
+-   **Engine:** `diff` (npm)
+-   **State Management:** Zustand
+-   **Database:** Dexie (IndexedDB)
+-   **Icons:** React Icons (Material Design)
 
-To learn more about Next.js, take a look at the following resources:
+## 📖 How to Use
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1.  **Input Text:** Paste or type your original text in the left panel and the modified version in the right panel.
+2.  **Compare:** Click the **Find Difference** button to generate the visual comparison.
+3.  **Analyze & Merge:**
+    -   Select a difference block to reveal merge controls.
+    -   Use the arrow buttons to move changes between sides.
+    -   Toggle **Word Wrap** or **View Mode** in the Settings panel for better visibility.
+4.  **Export:** Copy the final result back to your clipboard using the quick-copy buttons.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📄 License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is open-source and free to use.
