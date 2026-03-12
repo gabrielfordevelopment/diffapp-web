@@ -7,10 +7,10 @@ import clsx from "clsx";
 interface DiffMinimapProps {
   blocks: Array<ChangeBlock>;
   ignoreWhitespace: boolean;
-  onScrollRequest: (percentage: number) => void;
+  onSegmentClick: (blockId: string) => void;
 }
 
-export function DiffMinimap({ blocks, ignoreWhitespace, onScrollRequest }: DiffMinimapProps) {
+export function DiffMinimap({ blocks, ignoreWhitespace, onSegmentClick }: DiffMinimapProps) {
   const segments = useMemo(() => {
     let totalHeight = 0;
 
@@ -52,13 +52,6 @@ export function DiffMinimap({ blocks, ignoreWhitespace, onScrollRequest }: DiffM
     return result;
   }, [ blocks, ignoreWhitespace ]);
 
-  const handleTrackClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const y = e.clientY - rect.top;
-    const percentage = y / rect.height;
-    onScrollRequest(percentage);
-  };
-
   const getLeftColor = (kind: BlockType) => {
     if (kind === BlockType.Removed || kind === BlockType.Modified) return "bg-[#f5a4a4]";
     return "bg-transparent";
@@ -70,14 +63,15 @@ export function DiffMinimap({ blocks, ignoreWhitespace, onScrollRequest }: DiffM
   };
 
   return (
-    <div
-      className="w-6 shrink-0 bg-[#F6F8FA] border-l border-r border-gray-300 relative cursor-pointer mr-1"
-      onClick={handleTrackClick}
-    >
+    <div className="w-6 shrink-0 bg-[#F6F8FA] border-l border-r border-gray-300 relative cursor-default mr-1">
       {segments.map((seg) => (
         <div
           key={seg.id}
-          className="absolute w-full flex opacity-80 hover:opacity-100 transition-opacity"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSegmentClick(seg.id);
+          }}
+          className="absolute w-full flex opacity-80 hover:opacity-100 transition-opacity cursor-pointer"
           style={{ top: `${seg.offsetPct}%`, height: `${seg.heightPct}%` }}
         >
           <div className={clsx("flex-1 border-r border-gray-200/50", getLeftColor(seg.kind))} />

@@ -46,11 +46,11 @@ export function ComparisonView() {
     }, 2000);
   };
 
-  const handleScrollRequest = (percentage: number) => {
-    if (scrollContainerRef.current) {
-      const container = scrollContainerRef.current;
-      const targetScroll = percentage * (container.scrollHeight - container.clientHeight);
-      container.scrollTo({ top: targetScroll, behavior: "smooth" });
+  const handleSegmentClick = (blockId: string) => {
+    selectBlock(blockId);
+    const element = document.getElementById(`block-${blockId}`);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   };
 
@@ -60,7 +60,7 @@ export function ComparisonView() {
     }
 
     return (
-      <div className="flex w-full items-center border-t border-blue-500 bg-white py-2 relative">
+      <div className="flex w-full items-center border-t border-blue-500 bg-white py-2 relative sticky left-0 z-20">
         <div className="flex flex-1 justify-center">
           <button
             onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.LeftToRight, settings); }}
@@ -94,6 +94,9 @@ export function ComparisonView() {
   if (!comparisonResult || comparisonResult.blocks.length === 0) {
     return null;
   }
+
+  const wordWrapClass = settings.isWordWrapEnabled ? "break-all whitespace-pre-wrap" : "whitespace-pre";
+  const containerWidthClass = settings.isWordWrapEnabled ? "w-full" : "min-w-max";
 
   return (
     <div className="flex h-full w-full flex-col bg-white">
@@ -165,27 +168,28 @@ export function ComparisonView() {
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        <div ref={scrollContainerRef} className="flex-1 overflow-auto" style={{ fontSize: `${settings.fontSize}px` }}>
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto" style={{ fontSize: `${settings.fontSize}px` }}>
           {comparisonResult.blocks.map((block) => (
             <div
               key={block.id}
+              id={`block-${block.id}`}
               onClick={block.kind !== BlockType.Unchanged ? () => selectBlock(block.id) : undefined}
               className={clsx(
-                "flex flex-col border-y-2 border-transparent",
+                "flex flex-col border-y-2 border-transparent w-full",
                 block.kind !== BlockType.Unchanged && "cursor-pointer",
                 block.isSelected ? "bg-[#F0F8FF] border-blue-500" : (block.kind !== BlockType.Unchanged ? "hover:bg-[#F8F8F8] hover:border-gray-200" : "")
               )}
             >
               {settings.viewMode === ViewMode.Split ? (
                 <div className="flex w-full">
-                  <div className={clsx("flex flex-1 border-r border-gray-200", getBlockColorClass(block.kind, "old", block.isWhitespaceChange, settings.ignoreWhitespace))}>
-                    <div className="flex w-full flex-col">
+                  <div className={clsx("flex flex-1 overflow-x-auto custom-scrollbar border-r border-gray-200", getBlockColorClass(block.kind, "old", block.isWhitespaceChange, settings.ignoreWhitespace))}>
+                    <div className={clsx("flex flex-col", containerWidthClass)}>
                       {block.oldLines.map((line, idx) => (
-                        <div key={idx} className={clsx("flex min-h-[24px]", line.kind === DiffChangeType.Imaginary && "bg-[#f0f0f0]")}>
-                          <div className="w-10 shrink-0 select-none bg-[#F6F8FA] px-2 text-right text-gray-400 border-r border-gray-200 py-0.5">
+                        <div key={idx} className={clsx("flex min-h-[24px] w-full", line.kind === DiffChangeType.Imaginary && "bg-[#f0f0f0]")}>
+                          <div className="w-10 shrink-0 select-none bg-[#F6F8FA] px-2 text-right text-gray-400 border-r border-gray-200 py-0.5 sticky left-0 z-10">
                             {line.lineNumber}
                           </div>
-                          <div className={clsx("flex-1 px-2 py-0.5 font-mono break-all whitespace-pre-wrap")}>
+                          <div className={clsx("px-2 py-0.5 font-mono", wordWrapClass)}>
                             {line.fragments.map((frag, fIdx) => (
                               <span key={fIdx} className={getFragmentColorClass(frag.kind, frag.isWhitespaceChange, settings.ignoreWhitespace)}>
                                 {frag.text}
@@ -196,14 +200,14 @@ export function ComparisonView() {
                       ))}
                     </div>
                   </div>
-                  <div className={clsx("flex flex-1", getBlockColorClass(block.kind, "new", block.isWhitespaceChange, settings.ignoreWhitespace))}>
-                    <div className="flex w-full flex-col">
+                  <div className={clsx("flex flex-1 overflow-x-auto custom-scrollbar", getBlockColorClass(block.kind, "new", block.isWhitespaceChange, settings.ignoreWhitespace))}>
+                    <div className={clsx("flex flex-col", containerWidthClass)}>
                       {block.newLines.map((line, idx) => (
-                        <div key={idx} className={clsx("flex min-h-[24px]", line.kind === DiffChangeType.Imaginary && "bg-[#f0f0f0]")}>
-                          <div className="w-10 shrink-0 select-none bg-[#F6F8FA] px-2 text-right text-gray-400 border-r border-gray-200 py-0.5">
+                        <div key={idx} className={clsx("flex min-h-[24px] w-full", line.kind === DiffChangeType.Imaginary && "bg-[#f0f0f0]")}>
+                          <div className="w-10 shrink-0 select-none bg-[#F6F8FA] px-2 text-right text-gray-400 border-r border-gray-200 py-0.5 sticky left-0 z-10">
                             {line.lineNumber}
                           </div>
-                          <div className={clsx("flex-1 px-2 py-0.5 font-mono break-all whitespace-pre-wrap")}>
+                          <div className={clsx("px-2 py-0.5 font-mono", wordWrapClass)}>
                             {line.fragments.map((frag, fIdx) => (
                               <span key={fIdx} className={getFragmentColorClass(frag.kind, frag.isWhitespaceChange, settings.ignoreWhitespace)}>
                                 {frag.text}
@@ -216,85 +220,87 @@ export function ComparisonView() {
                   </div>
                 </div>
               ) : (
-                <div className="flex w-full flex-col">
-                  {(() => {
-                    if (block.kind === BlockType.Modified) {
-                      const lines: Array<UnifiedLineData> = [ ];
-                      block.oldLines.forEach(line => {
-                        if (line.kind !== DiffChangeType.Imaginary) {
-                          lines.push({
-                            line1: line.lineNumber,
-                            line2: "",
-                            sign: "-",
-                            fragments: line.fragments,
-                            bgClass: getBlockColorClass(BlockType.Removed, "old", block.isWhitespaceChange, settings.ignoreWhitespace)
-                          });
-                        }
-                      });
-                      block.newLines.forEach(line => {
-                        if (line.kind !== DiffChangeType.Imaginary) {
-                          lines.push({
-                            line1: "",
-                            line2: line.lineNumber,
-                            sign: "+",
-                            fragments: line.fragments,
-                            bgClass: getBlockColorClass(BlockType.Added, "new", block.isWhitespaceChange, settings.ignoreWhitespace)
-                          });
-                        }
-                      });
-                      return lines.map((l, idx) => (
-                        <div key={idx} className={clsx("flex min-h-[24px] w-full", l.bgClass)}>
-                          <div className="w-10 shrink-0 select-none bg-[#F6F8FA] px-2 text-right text-gray-400 py-0.5">
-                            {l.line1}
-                          </div>
-                          <div className="w-10 shrink-0 select-none bg-[#F6F8FA] px-2 text-right text-gray-400 border-r border-gray-200 py-0.5">
-                            {l.line2}
-                          </div>
-                          <div className="w-6 shrink-0 select-none px-1 text-center font-bold text-gray-400 py-0.5">
-                            {l.sign}
-                          </div>
-                          <div className="flex-1 px-2 py-0.5 font-mono break-all whitespace-pre-wrap">
-                            {l.fragments.map((frag: TextFragment, fIdx: number) => (
-                              <span key={fIdx} className={getFragmentColorClass(frag.kind, frag.isWhitespaceChange, settings.ignoreWhitespace)}>
-                                {frag.text}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      ));
-                    } else {
-                      return block.oldLines.map((line, idx) => {
-                        const newLine = block.newLines[ idx ];
-                        const isRemoved = block.kind === BlockType.Removed;
-                        const isAdded = block.kind === BlockType.Added;
-
-                        let bgClass = "bg-transparent";
-                        if (isRemoved) bgClass = getBlockColorClass(BlockType.Removed, "old", block.isWhitespaceChange, settings.ignoreWhitespace);
-                        if (isAdded) bgClass = getBlockColorClass(BlockType.Added, "new", block.isWhitespaceChange, settings.ignoreWhitespace);
-
-                        return (
-                          <div key={idx} className={clsx("flex min-h-[24px] w-full", bgClass)}>
-                            <div className="w-10 shrink-0 select-none bg-[#F6F8FA] px-2 text-right text-gray-400 py-0.5">
-                              {line.lineNumber || ""}
+                <div className="flex w-full overflow-x-auto custom-scrollbar">
+                  <div className={clsx("flex flex-col", containerWidthClass)}>
+                    {(() => {
+                      if (block.kind === BlockType.Modified) {
+                        const lines: Array<UnifiedLineData> = [ ];
+                        block.oldLines.forEach(line => {
+                          if (line.kind !== DiffChangeType.Imaginary) {
+                            lines.push({
+                              line1: line.lineNumber,
+                              line2: "",
+                              sign: "-",
+                              fragments: line.fragments,
+                              bgClass: getBlockColorClass(BlockType.Removed, "old", block.isWhitespaceChange, settings.ignoreWhitespace)
+                            });
+                          }
+                        });
+                        block.newLines.forEach(line => {
+                          if (line.kind !== DiffChangeType.Imaginary) {
+                            lines.push({
+                              line1: "",
+                              line2: line.lineNumber,
+                              sign: "+",
+                              fragments: line.fragments,
+                              bgClass: getBlockColorClass(BlockType.Added, "new", block.isWhitespaceChange, settings.ignoreWhitespace)
+                            });
+                          }
+                        });
+                        return lines.map((l, idx) => (
+                          <div key={idx} className={clsx("flex min-h-[24px] w-full", l.bgClass)}>
+                            <div className="w-10 shrink-0 select-none bg-[#F6F8FA] px-2 text-right text-gray-400 py-0.5 sticky left-0 z-10">
+                              {l.line1}
                             </div>
-                            <div className="w-10 shrink-0 select-none bg-[#F6F8FA] px-2 text-right text-gray-400 border-r border-gray-200 py-0.5">
-                              {newLine?.lineNumber || ""}
+                            <div className="w-10 shrink-0 select-none bg-[#F6F8FA] px-2 text-right text-gray-400 border-r border-gray-200 py-0.5 sticky left-[40px] z-10">
+                              {l.line2}
                             </div>
-                            <div className="w-6 shrink-0 select-none px-1 text-center font-bold text-gray-400 py-0.5">
-                              {isRemoved ? "-" : isAdded ? "+" : " "}
+                            <div className="w-6 shrink-0 select-none px-1 text-center font-bold text-gray-400 py-0.5 sticky left-[80px] z-10 bg-[#F6F8FA]">
+                              {l.sign}
                             </div>
-                            <div className="flex-1 px-2 py-0.5 font-mono break-all whitespace-pre-wrap">
-                              {(isAdded ? newLine?.fragments || [ ] : line.fragments).map((frag, fIdx) => (
+                            <div className={clsx("px-2 py-0.5 font-mono", wordWrapClass)}>
+                              {l.fragments.map((frag: TextFragment, fIdx: number) => (
                                 <span key={fIdx} className={getFragmentColorClass(frag.kind, frag.isWhitespaceChange, settings.ignoreWhitespace)}>
                                   {frag.text}
                                 </span>
                               ))}
                             </div>
                           </div>
-                        );
-                      });
-                    }
-                  })()}
+                        ));
+                      } else {
+                        return block.oldLines.map((line, idx) => {
+                          const newLine = block.newLines[ idx ];
+                          const isRemoved = block.kind === BlockType.Removed;
+                          const isAdded = block.kind === BlockType.Added;
+
+                          let bgClass = "bg-transparent";
+                          if (isRemoved) bgClass = getBlockColorClass(BlockType.Removed, "old", block.isWhitespaceChange, settings.ignoreWhitespace);
+                          if (isAdded) bgClass = getBlockColorClass(BlockType.Added, "new", block.isWhitespaceChange, settings.ignoreWhitespace);
+
+                          return (
+                            <div key={idx} className={clsx("flex min-h-[24px] w-full", bgClass)}>
+                              <div className="w-10 shrink-0 select-none bg-[#F6F8FA] px-2 text-right text-gray-400 py-0.5 sticky left-0 z-10">
+                                {line.lineNumber || ""}
+                              </div>
+                              <div className="w-10 shrink-0 select-none bg-[#F6F8FA] px-2 text-right text-gray-400 border-r border-gray-200 py-0.5 sticky left-[40px] z-10">
+                                {newLine?.lineNumber || ""}
+                              </div>
+                              <div className="w-6 shrink-0 select-none px-1 text-center font-bold text-gray-400 py-0.5 sticky left-[80px] z-10 bg-[#F6F8FA]">
+                                {isRemoved ? "-" : isAdded ? "+" : " "}
+                              </div>
+                              <div className={clsx("px-2 py-0.5 font-mono", wordWrapClass)}>
+                                {(isAdded ? newLine?.fragments || [ ] : line.fragments).map((frag, fIdx) => (
+                                  <span key={fIdx} className={getFragmentColorClass(frag.kind, frag.isWhitespaceChange, settings.ignoreWhitespace)}>
+                                    {frag.text}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        });
+                      }
+                    })()}
+                  </div>
                 </div>
               )}
               {renderMergeControls(block)}
@@ -305,7 +311,7 @@ export function ComparisonView() {
         <DiffMinimap
           blocks={comparisonResult.blocks}
           ignoreWhitespace={settings.ignoreWhitespace}
-          onScrollRequest={handleScrollRequest}
+          onSegmentClick={handleSegmentClick}
         />
       </div>
     </div>
