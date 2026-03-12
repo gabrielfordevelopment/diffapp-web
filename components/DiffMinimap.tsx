@@ -13,9 +13,9 @@ interface DiffMinimapProps {
 export function DiffMinimap({ blocks, ignoreWhitespace, onScrollRequest }: DiffMinimapProps) {
   const segments = useMemo(() => {
     let totalHeight = 0;
-    
+
     for (let i = 0; i < blocks.length; i++) {
-      totalHeight += Math.max(blocks[ i ].oldLines.length, blocks[ i ].newLines.length);
+      totalHeight += Math.max(blocks[i].oldLines.length, blocks[i].newLines.length);
     }
 
     if (totalHeight === 0) {
@@ -23,17 +23,17 @@ export function DiffMinimap({ blocks, ignoreWhitespace, onScrollRequest }: DiffM
     }
 
     let currentIndex = 0;
-    const result = [ ];
+    const result = [];
 
     for (let i = 0; i < blocks.length; i++) {
-      const block = blocks[ i ];
+      const block = blocks[i];
       const height = Math.max(block.oldLines.length, block.newLines.length);
 
       if (block.kind !== BlockType.Unchanged) {
         if (!(ignoreWhitespace && block.isWhitespaceChange)) {
           const offsetPct = (currentIndex / totalHeight) * 100;
           let heightPct = (height / totalHeight) * 100;
-          
+
           if (heightPct < 0.5) {
             heightPct = 0.5;
           }
@@ -50,7 +50,7 @@ export function DiffMinimap({ blocks, ignoreWhitespace, onScrollRequest }: DiffM
     }
 
     return result;
-  }, [ blocks, ignoreWhitespace ]);
+  }, [blocks, ignoreWhitespace]);
 
   const handleTrackClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -59,24 +59,30 @@ export function DiffMinimap({ blocks, ignoreWhitespace, onScrollRequest }: DiffM
     onScrollRequest(percentage);
   };
 
-  const getColor = (kind: BlockType) => {
-    if (kind === BlockType.Added) return "bg-[#8fe3c7]";
-    if (kind === BlockType.Removed) return "bg-[#f5a4a4]";
-    if (kind === BlockType.Modified) return "bg-[#8fe3c7] border-l-2 border-[#f5a4a4]";
+  const getLeftColor = (kind: BlockType) => {
+    if (kind === BlockType.Removed || kind === BlockType.Modified) return "bg-[#f5a4a4]";
+    return "bg-transparent";
+  };
+
+  const getRightColor = (kind: BlockType) => {
+    if (kind === BlockType.Added || kind === BlockType.Modified) return "bg-[#8fe3c7]";
     return "bg-transparent";
   };
 
   return (
-    <div 
-      className="w-8 shrink-0 bg-[#F6F8FA] border-l border-r border-gray-300 relative cursor-pointer"
+    <div
+      className="w-10 shrink-0 bg-[#F6F8FA] border-l border-r border-gray-300 relative cursor-pointer mr-1"
       onClick={handleTrackClick}
     >
       {segments.map((seg) => (
         <div
           key={seg.id}
-          className={clsx("absolute w-full opacity-80 hover:opacity-100", getColor(seg.kind))}
+          className="absolute w-full flex opacity-80 hover:opacity-100 transition-opacity"
           style={{ top: `${seg.offsetPct}%`, height: `${seg.heightPct}%` }}
-        />
+        >
+          <div className={clsx("flex-1 border-r border-gray-200/50", getLeftColor(seg.kind))} />
+          <div className={clsx("flex-1", getRightColor(seg.kind))} />
+        </div>
       ))}
     </div>
   );

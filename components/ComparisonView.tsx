@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useRef, useEffect } from "react";
-import { MdContentCopy, MdSwapHoriz, MdDelete, MdEast, MdWest, MdClose, MdDescription } from "react-icons/md";
+import { useMemo, useRef, useEffect, useState } from "react";
+import { MdContentCopy, MdSwapHoriz, MdDelete, MdEast, MdWest, MdClose, MdDescription, MdCheck } from "react-icons/md";
 import { useEditorStore } from "../store/useEditorStore";
 import { useSettingsStore } from "../store/useSettingsStore";
 import { getBlockColorClass, getFragmentColorClass, calculateStats } from "../utils/diffHelpers";
@@ -21,23 +21,29 @@ export function ComparisonView() {
   const { comparisonResult, leftText, rightText, swapTexts, clearContent, selectBlock, mergeBlock, compare } = useEditorStore();
   const { settings } = useSettingsStore();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [copiedSide, setCopiedSide] = useState<"left" | "right" | null>(null);
 
   useEffect(() => {
     if (leftText || rightText) {
-      compare(settings, false);
+      compare(settings, false, true);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ settings.precision ]);
+  }, [settings.precision]);
 
   const stats = useMemo(() => {
     return calculateStats(comparisonResult?.blocks, settings.ignoreWhitespace);
-  },[ comparisonResult, settings.ignoreWhitespace ]);
+  }, [comparisonResult, settings.ignoreWhitespace]);
 
-  const leftLineCount = useMemo(() => leftText ? leftText.split(/\r?\n/).length : 0, [ leftText ]);
-  const rightLineCount = useMemo(() => rightText ? rightText.split(/\r?\n/).length : 0, [ rightText ]);
+  const leftLineCount = useMemo(() => leftText ? leftText.split(/\r?\n/).length : 0, [leftText]);
+  const rightLineCount = useMemo(() => rightText ? rightText.split(/\r?\n/).length : 0, [rightText]);
 
-  const handleCopy = (text: string) => {
+  const handleCopy = (text: string, side: "left" | "right") => {
     navigator.clipboard.writeText(text).catch(() => {});
+    setCopiedSide(side);
+    
+    setTimeout(() => {
+      setCopiedSide((prev) => (prev === side ? null : prev));
+    }, 2000);
   };
 
   const handleScrollRequest = (percentage: number) => {
@@ -54,27 +60,33 @@ export function ComparisonView() {
     }
 
     return (
-      <div className="flex w-full items-center justify-between border-t border-blue-500 bg-white px-4 py-2">
-        <button
-          onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.LeftToRight, settings); }}
-          className="flex items-center gap-2 rounded bg-red-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-red-700"
-        >
-          <span>Merge</span>
-          <MdEast />
-        </button>
-        <button
-          onClick={(e) => { e.stopPropagation(); selectBlock(null); }}
-          className="rounded p-1 text-gray-500 hover:bg-gray-100"
-        >
-          <MdClose className="text-xl" />
-        </button>
-        <button
-          onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.RightToLeft, settings); }}
-          className="flex items-center gap-2 rounded bg-green-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-green-700"
-        >
-          <MdWest />
-          <span>Merge</span>
-        </button>
+      <div className="flex w-full items-center border-t border-blue-500 bg-white py-2 relative">
+        <div className="flex flex-1 justify-center">
+          <button
+            onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.LeftToRight, settings); }}
+            className="flex items-center gap-2 rounded bg-red-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
+          >
+            <span>Merge</span>
+            <MdEast />
+          </button>
+        </div>
+        <div className="flex shrink-0 px-4">
+          <button
+            onClick={(e) => { e.stopPropagation(); selectBlock(null); }}
+            className="rounded p-1 text-gray-500 hover:bg-gray-100 transition-colors"
+          >
+            <MdClose className="text-xl" />
+          </button>
+        </div>
+        <div className="flex flex-1 justify-center">
+          <button
+            onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.RightToLeft, settings); }}
+            className="flex items-center gap-2 rounded bg-green-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-green-700 transition-colors"
+          >
+            <MdWest />
+            <span>Merge</span>
+          </button>
+        </div>
       </div>
     );
   };
@@ -93,8 +105,23 @@ export function ComparisonView() {
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-500">{leftLineCount} lines</span>
-            <button onClick={() => handleCopy(leftText)} className="text-blue-600 hover:bg-gray-200 p-1.5 rounded" title="Copy Original Text">
-              <MdContentCopy />
+            <button 
+              onClick={() => handleCopy(leftText, "left")} 
+              disabled={copiedSide === "left"}
+              className="flex items-center gap-1 text-blue-600 hover:bg-gray-200 px-2 py-1.5 rounded disabled:text-green-600 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-all" 
+              title="Copy Original Text"
+            >
+              {copiedSide === "left" ? (
+                <>
+                  <MdCheck className="text-lg" />
+                  <span className="text-xs font-bold">Copied</span>
+                </>
+              ) : (
+                <>
+                  <MdContentCopy className="text-lg" />
+                  <span className="text-xs font-bold">Copy</span>
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -110,8 +137,23 @@ export function ComparisonView() {
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-500">{rightLineCount} lines</span>
-            <button onClick={() => handleCopy(rightText)} className="text-blue-600 hover:bg-gray-200 p-1.5 rounded" title="Copy Modified Text">
-              <MdContentCopy />
+            <button 
+              onClick={() => handleCopy(rightText, "right")} 
+              disabled={copiedSide === "right"}
+              className="flex items-center gap-1 text-blue-600 hover:bg-gray-200 px-2 py-1.5 rounded disabled:text-green-600 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-all" 
+              title="Copy Modified Text"
+            >
+              {copiedSide === "right" ? (
+                <>
+                  <MdCheck className="text-lg" />
+                  <span className="text-xs font-bold">Copied</span>
+                </>
+              ) : (
+                <>
+                  <MdContentCopy className="text-lg" />
+                  <span className="text-xs font-bold">Copy</span>
+                </>
+              )}
             </button>
             <div className="w-px h-6 bg-gray-300 mx-2" />
             <button onClick={clearContent} className="flex items-center gap-1 bg-red-600 text-white px-3 py-1.5 rounded text-sm font-semibold hover:bg-red-700">
@@ -123,13 +165,9 @@ export function ComparisonView() {
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        <div 
-          ref={scrollContainerRef}
-          className="flex-1 overflow-auto" 
-          style={{ fontSize: `${settings.fontSize}px` }}
-        >
+        <div ref={scrollContainerRef} className="flex-1 overflow-auto" style={{ fontSize: `${settings.fontSize}px` }}>
           {comparisonResult.blocks.map((block) => (
-            <div 
+            <div
               key={block.id}
               onClick={() => selectBlock(block.id)}
               className={clsx(
@@ -180,7 +218,7 @@ export function ComparisonView() {
                 <div className="flex w-full flex-col">
                   {(() => {
                     if (block.kind === BlockType.Modified) {
-                      const lines: Array<UnifiedLineData> =[ ];
+                      const lines: Array<UnifiedLineData> = [];
                       block.oldLines.forEach(line => {
                         if (line.kind !== DiffChangeType.Imaginary) {
                           lines.push({
@@ -225,10 +263,10 @@ export function ComparisonView() {
                       ));
                     } else {
                       return block.oldLines.map((line, idx) => {
-                        const newLine = block.newLines[ idx ];
+                        const newLine = block.newLines[idx];
                         const isRemoved = block.kind === BlockType.Removed;
                         const isAdded = block.kind === BlockType.Added;
-                        
+
                         let bgClass = "bg-transparent";
                         if (isRemoved) bgClass = getBlockColorClass(BlockType.Removed, "old", block.isWhitespaceChange, settings.ignoreWhitespace);
                         if (isAdded) bgClass = getBlockColorClass(BlockType.Added, "new", block.isWhitespaceChange, settings.ignoreWhitespace);
@@ -245,7 +283,7 @@ export function ComparisonView() {
                               {isRemoved ? "-" : isAdded ? "+" : " "}
                             </div>
                             <div className="flex-1 px-2 py-0.5 font-mono break-all whitespace-pre-wrap">
-                              {(isAdded ? newLine?.fragments || [ ] : line.fragments).map((frag, fIdx) => (
+                              {(isAdded ? newLine?.fragments || [] : line.fragments).map((frag, fIdx) => (
                                 <span key={fIdx} className={getFragmentColorClass(frag.kind, frag.isWhitespaceChange, settings.ignoreWhitespace)}>
                                   {frag.text}
                                 </span>
@@ -262,10 +300,10 @@ export function ComparisonView() {
             </div>
           ))}
         </div>
-        <DiffMinimap 
-          blocks={comparisonResult.blocks} 
-          ignoreWhitespace={settings.ignoreWhitespace} 
-          onScrollRequest={handleScrollRequest} 
+        <DiffMinimap
+          blocks={comparisonResult.blocks}
+          ignoreWhitespace={settings.ignoreWhitespace}
+          onScrollRequest={handleScrollRequest}
         />
       </div>
     </div>
