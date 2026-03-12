@@ -6,7 +6,7 @@ import { useEditorStore } from "../store/useEditorStore";
 import { useSettingsStore } from "../store/useSettingsStore";
 import { getBlockColorClass, getFragmentColorClass, calculateStats } from "../utils/diffHelpers";
 import { DiffMinimap } from "./DiffMinimap";
-import { MergeDirection, ViewMode, ChangeBlock, BlockType, DiffChangeType, TextFragment } from "../types";
+import { MergeDirection, ViewMode, BlockType, DiffChangeType, TextFragment } from "../types";
 import clsx from "clsx";
 
 interface UnifiedLineData {
@@ -20,8 +20,15 @@ interface UnifiedLineData {
 export function ComparisonView() {
   const { comparisonResult, leftText, rightText, swapTexts, clearContent, selectBlock, mergeBlock, compare } = useEditorStore();
   const { settings } = useSettingsStore();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  
+  const leftScrollRef = useRef<HTMLDivElement>(null);
+  const rightScrollRef = useRef<HTMLDivElement>(null);
+  const unifiedScrollRef = useRef<HTMLDivElement>(null);
+  const isSyncingScroll = useRef<"left" | "right" | null>(null);
+  const syncTimeout = useRef<NodeJS.Timeout | null>(null);
+
   const [ copiedSide, setCopiedSide ] = useState<"left" | "right" | null>(null);
+  const [ hoveredBlockId, setHoveredBlockId ] = useState<string | null>(null);
 
   useEffect(() => {
     if (leftText || rightText) {
@@ -46,49 +53,47 @@ export function ComparisonView() {
     }, 2000);
   };
 
-  const handleSegmentClick = (blockId: string) => {
-    selectBlock(blockId);
-    const element = document.getElementById(`block-${blockId}`);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "center" });
+  const handleScrollRequest = (percentage: number) => {
+    const container = settings.viewMode === ViewMode.Split ? leftScrollRef.current : unifiedScrollRef.current;
+    if (container) {
+      const targetScroll = percentage * (container.scrollHeight - container.clientHeight);
+      container.scrollTo({ top: targetScroll, behavior: "smooth" });
     }
   };
 
-  const renderMergeControls = (block: ChangeBlock) => {
-    if (!block.isSelected || block.kind === BlockType.Unchanged) {
-      return null;
+  const handleSegmentClick = (blockId: string) => {
+    selectBlock(blockId);
+    const prefix = settings.viewMode === ViewMode.Split ? "block-left-" : "block-unified-";
+    const element = document.getElementById(`${prefix}${blockId}`);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
     }
+  };
 
-    return (
-      <div className="flex w-full items-center border-t border-blue-500 bg-white py-2 relative sticky left-0 z-20">
-        <div className="flex flex-1 justify-center">
-          <button
-            onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.LeftToRight, settings); }}
-            className="flex items-center gap-2 rounded bg-red-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
-          >
-            <span>Merge</span>
-            <MdEast />
-          </button>
-        </div>
-        <div className="flex shrink-0 px-4">
-          <button
-            onClick={(e) => { e.stopPropagation(); selectBlock(null); }}
-            className="rounded p-1 text-gray-500 hover:bg-gray-100 transition-colors"
-          >
-            <MdClose className="text-xl" />
-          </button>
-        </div>
-        <div className="flex flex-1 justify-center">
-          <button
-            onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.RightToLeft, settings); }}
-            className="flex items-center gap-2 rounded bg-green-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-green-700 transition-colors"
-          >
-            <MdWest />
-            <span>Merge</span>
-          </button>
-        </div>
-      </div>
-    );
+  const handleLeftScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    if (isSyncingScroll.current === "right") return;
+    isSyncingScroll.current = "left";
+    if (rightScrollRef.current) {
+      rightScrollRef.current.scrollTop = e.currentTarget.scrollTop;
+      rightScrollRef.current.scrollLeft = e.currentTarget.scrollLeft;
+    }
+    if (syncTimeout.current) clearTimeout(syncTimeout.current);
+    syncTimeout.current = setTimeout(() => {
+      isSyncingScroll.current = null;
+    }, 50);
+  };
+
+  const handleRightScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    if (isSyncingScroll.current === "left") return;
+    isSyncingScroll.current = "right";
+    if (leftScrollRef.current) {
+      leftScrollRef.current.scrollTop = e.currentTarget.scrollTop;
+      leftScrollRef.current.scrollLeft = e.currentTarget.scrollLeft;
+    }
+    if (syncTimeout.current) clearTimeout(syncTimeout.current);
+    syncTimeout.current = setTimeout(() => {
+      isSyncingScroll.current = null;
+    }, 50);
   };
 
   if (!comparisonResult || comparisonResult.blocks.length === 0) {
@@ -167,61 +172,134 @@ export function ComparisonView() {
         </div>
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
-        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto" style={{ fontSize: `${settings.fontSize}px` }}>
-          {comparisonResult.blocks.map((block) => (
-            <div
-              key={block.id}
-              id={`block-${block.id}`}
-              onClick={block.kind !== BlockType.Unchanged ? () => selectBlock(block.id) : undefined}
-              className={clsx(
-                "flex flex-col border-y-2 border-transparent w-full",
-                block.kind !== BlockType.Unchanged && "cursor-pointer",
-                block.isSelected ? "bg-[#F0F8FF] border-blue-500" : (block.kind !== BlockType.Unchanged ? "hover:bg-[#F8F8F8] hover:border-gray-200" : "")
-              )}
-            >
-              {settings.viewMode === ViewMode.Split ? (
-                <div className="flex w-full">
-                  <div className={clsx("flex flex-1 overflow-x-auto custom-scrollbar border-r border-gray-200", getBlockColorClass(block.kind, "old", block.isWhitespaceChange, settings.ignoreWhitespace))}>
-                    <div className={clsx("flex flex-col", containerWidthClass)}>
-                      {block.oldLines.map((line, idx) => (
-                        <div key={idx} className={clsx("flex min-h-[24px] w-full", line.kind === DiffChangeType.Imaginary && "bg-[#f0f0f0]")}>
-                          <div className="w-10 shrink-0 select-none bg-[#F6F8FA] px-2 text-right text-gray-400 border-r border-gray-200 py-0.5 sticky left-0 z-10">
-                            {line.lineNumber}
+      <div className="flex flex-1 overflow-hidden relative" style={{ fontSize: `${settings.fontSize}px` }}>
+        {settings.viewMode === ViewMode.Split ? (
+          <div className="flex h-full w-full">
+            <div className="flex-1 overflow-auto custom-scrollbar border-r border-gray-300" ref={leftScrollRef} onScroll={handleLeftScroll}>
+              <div className={clsx("flex flex-col min-w-full h-max pb-8", containerWidthClass)}>
+                {comparisonResult.blocks.map((block) => {
+                  const isHovered = hoveredBlockId === block.id && block.kind !== BlockType.Unchanged;
+                  return (
+                    <div
+                      key={`left-${block.id}`}
+                      id={`block-left-${block.id}`}
+                      onMouseEnter={() => setHoveredBlockId(block.id)}
+                      onMouseLeave={() => setHoveredBlockId(null)}
+                      onClick={block.kind !== BlockType.Unchanged ? () => selectBlock(block.id) : undefined}
+                      className={clsx(
+                        "flex flex-col border-y-2 border-transparent w-full",
+                        block.kind !== BlockType.Unchanged && "cursor-pointer",
+                        block.isSelected ? "bg-[#F0F8FF] border-blue-500" : (isHovered ? "bg-[#F8F8F8] border-gray-200" : "")
+                      )}
+                    >
+                      <div className={clsx("flex w-full flex-col", getBlockColorClass(block.kind, "old", block.isWhitespaceChange, settings.ignoreWhitespace))}>
+                        {block.oldLines.map((line, idx) => (
+                          <div key={idx} className={clsx("flex min-h-[24px] w-full", line.kind === DiffChangeType.Imaginary && "bg-[#f0f0f0]")}>
+                            <div className="w-10 shrink-0 select-none bg-[#F6F8FA] px-2 text-right text-gray-400 border-r border-gray-200 py-0.5 sticky left-0 z-10">
+                              {line.lineNumber}
+                            </div>
+                            <div className={clsx("px-2 py-0.5 font-mono", wordWrapClass)}>
+                              {line.fragments.map((frag, fIdx) => (
+                                <span key={fIdx} className={getFragmentColorClass(frag.kind, frag.isWhitespaceChange, settings.ignoreWhitespace)}>
+                                  {frag.text}
+                                </span>
+                              ))}
+                            </div>
                           </div>
-                          <div className={clsx("px-2 py-0.5 font-mono", wordWrapClass)}>
-                            {line.fragments.map((frag, fIdx) => (
-                              <span key={fIdx} className={getFragmentColorClass(frag.kind, frag.isWhitespaceChange, settings.ignoreWhitespace)}>
-                                {frag.text}
-                              </span>
-                            ))}
+                        ))}
+                      </div>
+                      {block.isSelected && block.kind !== BlockType.Unchanged && (
+                        <div className="flex items-center justify-end w-full min-w-full border-t border-blue-500 bg-white relative h-12">
+                          <div className="sticky right-0 flex items-center justify-end gap-4 px-4 bg-white h-full z-20">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.LeftToRight, settings); }}
+                              className="flex items-center gap-2 rounded bg-red-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
+                            >
+                              <span>Merge</span>
+                              <MdEast />
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); selectBlock(null); }}
+                              className="rounded p-1 text-gray-500 hover:bg-gray-100 transition-colors"
+                            >
+                              <MdClose className="text-xl" />
+                            </button>
                           </div>
                         </div>
-                      ))}
+                      )}
                     </div>
-                  </div>
-                  <div className={clsx("flex flex-1 overflow-x-auto custom-scrollbar", getBlockColorClass(block.kind, "new", block.isWhitespaceChange, settings.ignoreWhitespace))}>
-                    <div className={clsx("flex flex-col", containerWidthClass)}>
-                      {block.newLines.map((line, idx) => (
-                        <div key={idx} className={clsx("flex min-h-[24px] w-full", line.kind === DiffChangeType.Imaginary && "bg-[#f0f0f0]")}>
-                          <div className="w-10 shrink-0 select-none bg-[#F6F8FA] px-2 text-right text-gray-400 border-r border-gray-200 py-0.5 sticky left-0 z-10">
-                            {line.lineNumber}
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-auto custom-scrollbar" ref={rightScrollRef} onScroll={handleRightScroll}>
+              <div className={clsx("flex flex-col min-w-full h-max pb-8", containerWidthClass)}>
+                {comparisonResult.blocks.map((block) => {
+                  const isHovered = hoveredBlockId === block.id && block.kind !== BlockType.Unchanged;
+                  return (
+                    <div
+                      key={`right-${block.id}`}
+                      id={`block-right-${block.id}`}
+                      onMouseEnter={() => setHoveredBlockId(block.id)}
+                      onMouseLeave={() => setHoveredBlockId(null)}
+                      onClick={block.kind !== BlockType.Unchanged ? () => selectBlock(block.id) : undefined}
+                      className={clsx(
+                        "flex flex-col border-y-2 border-transparent w-full",
+                        block.kind !== BlockType.Unchanged && "cursor-pointer",
+                        block.isSelected ? "bg-[#F0F8FF] border-blue-500" : (isHovered ? "bg-[#F8F8F8] border-gray-200" : "")
+                      )}
+                    >
+                      <div className={clsx("flex w-full flex-col", getBlockColorClass(block.kind, "new", block.isWhitespaceChange, settings.ignoreWhitespace))}>
+                        {block.newLines.map((line, idx) => (
+                          <div key={idx} className={clsx("flex min-h-[24px] w-full", line.kind === DiffChangeType.Imaginary && "bg-[#f0f0f0]")}>
+                            <div className="w-10 shrink-0 select-none bg-[#F6F8FA] px-2 text-right text-gray-400 border-r border-gray-200 py-0.5 sticky left-0 z-10">
+                              {line.lineNumber}
+                            </div>
+                            <div className={clsx("px-2 py-0.5 font-mono", wordWrapClass)}>
+                              {line.fragments.map((frag, fIdx) => (
+                                <span key={fIdx} className={getFragmentColorClass(frag.kind, frag.isWhitespaceChange, settings.ignoreWhitespace)}>
+                                  {frag.text}
+                                </span>
+                              ))}
+                            </div>
                           </div>
-                          <div className={clsx("px-2 py-0.5 font-mono", wordWrapClass)}>
-                            {line.fragments.map((frag, fIdx) => (
-                              <span key={fIdx} className={getFragmentColorClass(frag.kind, frag.isWhitespaceChange, settings.ignoreWhitespace)}>
-                                {frag.text}
-                              </span>
-                            ))}
+                        ))}
+                      </div>
+                      {block.isSelected && block.kind !== BlockType.Unchanged && (
+                        <div className="flex items-center justify-start w-full min-w-full border-t border-blue-500 bg-white relative h-12">
+                          <div className="sticky left-0 flex items-center justify-start px-4 bg-white h-full z-20">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.RightToLeft, settings); }}
+                              className="flex items-center gap-2 rounded bg-green-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-green-700 transition-colors"
+                            >
+                              <MdWest />
+                              <span>Merge</span>
+                            </button>
                           </div>
                         </div>
-                      ))}
+                      )}
                     </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex w-full overflow-x-auto custom-scrollbar">
-                  <div className={clsx("flex flex-col", containerWidthClass)}>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex-1 overflow-auto custom-scrollbar" ref={unifiedScrollRef}>
+            <div className={clsx("flex flex-col min-w-full h-max pb-8", containerWidthClass)}>
+              {comparisonResult.blocks.map((block) => (
+                <div
+                  key={block.id}
+                  id={`block-unified-${block.id}`}
+                  onClick={block.kind !== BlockType.Unchanged ? () => selectBlock(block.id) : undefined}
+                  className={clsx(
+                    "flex flex-col border-y-2 border-transparent w-full",
+                    block.kind !== BlockType.Unchanged && "cursor-pointer",
+                    block.isSelected ? "bg-[#F0F8FF] border-blue-500" : (block.kind !== BlockType.Unchanged ? "hover:bg-[#F8F8F8] hover:border-gray-200" : "")
+                  )}
+                >
+                  <div className="flex w-full flex-col">
                     {(() => {
                       if (block.kind === BlockType.Modified) {
                         const lines: Array<UnifiedLineData> = [ ];
@@ -301,12 +379,37 @@ export function ComparisonView() {
                       }
                     })()}
                   </div>
+                  {block.isSelected && block.kind !== BlockType.Unchanged && (
+                    <div className="flex items-center justify-center w-full min-w-full border-t border-blue-500 bg-white relative h-12">
+                      <div className="sticky left-1/2 -translate-x-1/2 flex items-center justify-center gap-4 px-4 bg-white h-full z-20 w-max">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.LeftToRight, settings); }}
+                          className="flex items-center gap-2 rounded bg-red-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
+                        >
+                          <span>Merge</span>
+                          <MdEast />
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); selectBlock(null); }}
+                          className="rounded p-1 text-gray-500 hover:bg-gray-100 transition-colors mx-2"
+                        >
+                          <MdClose className="text-xl" />
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.RightToLeft, settings); }}
+                          className="flex items-center gap-2 rounded bg-green-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-green-700 transition-colors"
+                        >
+                          <MdWest />
+                          <span>Merge</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-              {renderMergeControls(block)}
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
         
         <DiffMinimap
           blocks={comparisonResult.blocks}
