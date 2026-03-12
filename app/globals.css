@@ -25,7 +25,7 @@
   --diff-removed-bg: #ffeef0;
   --diff-removed-fg: #fdb8c0;
   --diff-empty-bg: #f0f0f0;
-  --hover-overlay: rgba(0, 0, 0, 0.2);
+  --hover-overlay: rgba(0, 0, 0, 0.05);
   --ui-selected-bg: #f0f8ff;
   --ui-hover-bg: #f8f8f8;
   --minimap-added: #8fe3c7;
@@ -55,5 +55,23 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+.hide-vertical-scrollbar::-webkit-scrollbar {
+  width: 0px;
+  height: 8px;
+}
+
+.hide-vertical-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.hide-vertical-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 10px;
+}
+
+.hide-vertical-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: #94a3b8;
 }
