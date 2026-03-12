@@ -6,15 +6,15 @@ export function getBlockColorClass(kind: BlockType, side: "old" | "new", isWhite
   }
 
   if (kind === BlockType.Modified) {
-    return side === "old" ? "bg-[#ffeef0]" : "bg-[#e6ffed]";
+    return side === "old" ? "bg-diff-removed-bg" : "bg-diff-added-bg";
   }
 
   if (kind === BlockType.Added) {
-    return side === "new" ? "bg-[#e6ffed]" : "bg-[#f0f0f0]";
+    return side === "new" ? "bg-diff-added-bg" : "bg-diff-empty-bg";
   }
 
   if (kind === BlockType.Removed) {
-    return side === "old" ? "bg-[#ffeef0]" : "bg-[#f0f0f0]";
+    return side === "old" ? "bg-diff-removed-bg" : "bg-diff-empty-bg";
   }
 
   return "bg-transparent";
@@ -26,11 +26,11 @@ export function getFragmentColorClass(kind: DiffChangeType, isWhitespaceChange: 
   }
 
   if (kind === DiffChangeType.Inserted) {
-    return "bg-[#acf2bd] text-gray-900";
+    return "bg-diff-added-fg text-gray-900";
   }
 
   if (kind === DiffChangeType.Deleted) {
-    return "bg-[#fdb8c0] text-gray-900";
+    return "bg-diff-removed-fg text-gray-900";
   }
 
   return "bg-transparent text-gray-900";
@@ -46,7 +46,7 @@ export function calculateStats(blocks: Array<ChangeBlock> | undefined, ignoreWhi
 
   for (let i = 0; i < blocks.length; i++) {
     const block = blocks[ i ];
-    
+
     if (ignoreWhitespace && block.isWhitespaceChange) {
       continue;
     }

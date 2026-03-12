@@ -15,7 +15,7 @@ export function InputView() {
   };
 
   return (
-    <div className="flex flex-col w-full h-full p-4 bg-[#f6f8fa]">
+    <div className="flex flex-col w-full h-full p-4 bg-background-ui">
       <div className="flex items-center justify-between mb-2 px-2 gap-4">
         <div className="flex flex-1 items-center gap-2">
           <MdDescription className="text-gray-500 text-lg" />
@@ -23,6 +23,7 @@ export function InputView() {
         </div>
         <div className="flex flex-1 items-center gap-2">
           <MdDescription className="text-gray-500 text-lg" />
+  
           <span className="font-bold text-gray-800 text-sm">Changed Text</span>
         </div>
       </div>
@@ -33,8 +34,10 @@ export function InputView() {
           onChange={(e) => setLeftText(e.target.value)}
           className="flex-1 resize-none rounded-md border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono outline-none"
           style={{
+   
             fontSize: `${settings.fontSize}px`,
-            whiteSpace: settings.isWordWrapEnabled ? "pre-wrap" : "pre"
+            whiteSpace: settings.isWordWrapEnabled ?
+              "pre-wrap" : "pre"
           }}
           spellCheck={false}
         />
@@ -43,8 +46,10 @@ export function InputView() {
           onChange={(e) => setRightText(e.target.value)}
           className="flex-1 resize-none rounded-md border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono outline-none"
           style={{
+         
             fontSize: `${settings.fontSize}px`,
-            whiteSpace: settings.isWordWrapEnabled ? "pre-wrap" : "pre"
+            whiteSpace: settings.isWordWrapEnabled ?
+              "pre-wrap" : "pre"
           }}
           spellCheck={false}
         />
@@ -55,6 +60,7 @@ export function InputView() {
           onClick={handleCompare}
           disabled={!leftText && !rightText}
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed text-white px-8 py-2.5 rounded-md font-semibold transition-colors shadow-sm"
+ 
         >
           <MdSearch className="text-xl" />
           Check it!

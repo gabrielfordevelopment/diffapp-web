@@ -13,12 +13,13 @@ export function EditorView() {
 
   return (
     <div className="flex h-full w-full overflow-hidden bg-white">
-      <div className="flex shrink-0 border-r border-gray-300 bg-[#f6f8fa] transition-all duration-300">
+      <div className="flex shrink-0 border-r border-gray-300 bg-background-ui transition-all duration-300">
         {!settings.isSettingsPanelOpen ? (
           <button
             onClick={() => updateSettings({ isSettingsPanelOpen: true })}
             className="flex h-full w-8 items-center justify-center hover:bg-gray-200 transition-colors"
             title="Open Settings"
+         
           >
             <MdKeyboardArrowRight className="text-2xl text-gray-500" />
           </button>
@@ -26,12 +27,14 @@ export function EditorView() {
           <div className="flex w-72 flex-col h-full">
             <div className="flex items-center justify-between border-b border-gray-300 p-4">
               <div className="flex items-center gap-2">
+               
                 <MdTune className="text-xl text-gray-600" />
                 <h2 className="text-base font-bold text-gray-900">Settings</h2>
               </div>
               <button
                 onClick={() => updateSettings({ isSettingsPanelOpen: false })}
                 className="rounded p-1 hover:bg-gray-200 transition-colors"
+         
                 title="Close Settings"
               >
                 <MdKeyboardArrowLeft className="text-2xl text-gray-500" />
@@ -39,6 +42,7 @@ export function EditorView() {
             </div>
             <div className="flex-1 overflow-y-auto">
               <SettingsView />
+    
             </div>
           </div>
         )}
@@ -46,15 +50,17 @@ export function EditorView() {
 
       <div className="flex flex-1 flex-col overflow-hidden">
         <div className="flex-1 overflow-hidden bg-white relative">
-          {comparisonResult ? (
-            <ComparisonView />
-          ) : (
-            !isInputExpanded && (
-              <div className="flex h-full w-full items-center justify-center">
-                <p className="text-gray-400">No comparison generated yet.</p>
-              </div>
-            )
-          )}
+          {comparisonResult ?
+            (
+              <ComparisonView />
+            ) : (
+              !isInputExpanded && (
+                <div className="flex h-full w-full items-center justify-center">
+                  <p className="text-gray-400">No comparison generated yet.</p>
+                </div>
+          
+              )
+            )}
         </div>
 
         <button
@@ -63,6 +69,7 @@ export function EditorView() {
         >
           <MdBorderColor className="text-lg" />
           <span className="text-sm font-semibold">Input / Editor</span>
+      
           {!isInputExpanded ? <MdExpandLess className="text-xl" /> : <MdExpandMore className="text-xl" />}
         </button>
 

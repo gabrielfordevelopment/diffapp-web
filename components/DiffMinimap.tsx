@@ -53,17 +53,17 @@ export function DiffMinimap({ blocks, ignoreWhitespace, onSegmentClick }: DiffMi
   }, [ blocks, ignoreWhitespace ]);
 
   const getLeftColor = (kind: BlockType) => {
-    if (kind === BlockType.Removed || kind === BlockType.Modified) return "bg-[#f5a4a4]";
+    if (kind === BlockType.Removed || kind === BlockType.Modified) return "bg-minimap-removed";
     return "bg-transparent";
   };
 
   const getRightColor = (kind: BlockType) => {
-    if (kind === BlockType.Added || kind === BlockType.Modified) return "bg-[#8fe3c7]";
+    if (kind === BlockType.Added || kind === BlockType.Modified) return "bg-minimap-added";
     return "bg-transparent";
   };
 
   return (
-    <div className="w-6 shrink-0 bg-[#F6F8FA] border-l border-r border-gray-300 relative cursor-default mr-1">
+    <div className="w-6 shrink-0 bg-background-ui border-l border-r border-gray-300 relative cursor-default mr-1">
       {segments.map((seg) => (
         <div
           key={seg.id}
