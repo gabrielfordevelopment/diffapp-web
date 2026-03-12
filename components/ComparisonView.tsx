@@ -21,26 +21,26 @@ export function ComparisonView() {
   const { comparisonResult, leftText, rightText, swapTexts, clearContent, selectBlock, mergeBlock, compare } = useEditorStore();
   const { settings } = useSettingsStore();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [copiedSide, setCopiedSide] = useState<"left" | "right" | null>(null);
+  const [ copiedSide, setCopiedSide ] = useState<"left" | "right" | null>(null);
 
   useEffect(() => {
     if (leftText || rightText) {
       compare(settings, false, true);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [settings.precision]);
+  }, [ settings.precision ]);
 
   const stats = useMemo(() => {
     return calculateStats(comparisonResult?.blocks, settings.ignoreWhitespace);
-  }, [comparisonResult, settings.ignoreWhitespace]);
+  }, [ comparisonResult, settings.ignoreWhitespace ]);
 
-  const leftLineCount = useMemo(() => leftText ? leftText.split(/\r?\n/).length : 0, [leftText]);
-  const rightLineCount = useMemo(() => rightText ? rightText.split(/\r?\n/).length : 0, [rightText]);
+  const leftLineCount = useMemo(() => leftText ? leftText.split(/\r?\n/).length : 0, [ leftText ]);
+
+  const rightLineCount = useMemo(() => rightText ? rightText.split(/\r?\n/).length : 0, [ rightText ]);
 
   const handleCopy = (text: string, side: "left" | "right") => {
     navigator.clipboard.writeText(text).catch(() => {});
     setCopiedSide(side);
-    
+
     setTimeout(() => {
       setCopiedSide((prev) => (prev === side ? null : prev));
     }, 2000);
@@ -55,7 +55,7 @@ export function ComparisonView() {
   };
 
   const renderMergeControls = (block: ChangeBlock) => {
-    if (!block.isSelected || block.kind === "Unchanged") {
+    if (!block.isSelected || block.kind === BlockType.Unchanged) {
       return null;
     }
 
@@ -97,7 +97,7 @@ export function ComparisonView() {
 
   return (
     <div className="flex h-full w-full flex-col bg-white">
-      <div className="flex items-center justify-between border-b border-gray-300 bg-[#f6f8fa] px-4 py-3 shrink-0">
+      <div className="flex items-center justify-between border-b border-gray-300 bg-[#f6f8fa] px-4 py-1.5 shrink-0">
         <div className="flex flex-1 items-center justify-between">
           <div className="flex items-center gap-2">
             <MdDescription className="text-xl text-gray-500" />
@@ -105,10 +105,10 @@ export function ComparisonView() {
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-500">{leftLineCount} lines</span>
-            <button 
-              onClick={() => handleCopy(leftText, "left")} 
+            <button
+              onClick={() => handleCopy(leftText, "left")}
               disabled={copiedSide === "left"}
-              className="flex items-center gap-1 text-blue-600 hover:bg-gray-200 px-2 py-1.5 rounded disabled:text-green-600 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-all" 
+              className="flex items-center gap-1 text-blue-600 hover:bg-gray-200 px-2 py-1.5 rounded disabled:text-green-600 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-all"
               title="Copy Original Text"
             >
               {copiedSide === "left" ? (
@@ -137,10 +137,10 @@ export function ComparisonView() {
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-500">{rightLineCount} lines</span>
-            <button 
-              onClick={() => handleCopy(rightText, "right")} 
+            <button
+              onClick={() => handleCopy(rightText, "right")}
               disabled={copiedSide === "right"}
-              className="flex items-center gap-1 text-blue-600 hover:bg-gray-200 px-2 py-1.5 rounded disabled:text-green-600 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-all" 
+              className="flex items-center gap-1 text-blue-600 hover:bg-gray-200 px-2 py-1.5 rounded disabled:text-green-600 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-all"
               title="Copy Modified Text"
             >
               {copiedSide === "right" ? (
@@ -169,10 +169,11 @@ export function ComparisonView() {
           {comparisonResult.blocks.map((block) => (
             <div
               key={block.id}
-              onClick={() => selectBlock(block.id)}
+              onClick={block.kind !== BlockType.Unchanged ? () => selectBlock(block.id) : undefined}
               className={clsx(
-                "flex flex-col border-y-2 border-transparent cursor-pointer",
-                block.isSelected ? "bg-[#F0F8FF] border-blue-500" : "hover:bg-[#F8F8F8] hover:border-gray-200"
+                "flex flex-col border-y-2 border-transparent",
+                block.kind !== BlockType.Unchanged && "cursor-pointer",
+                block.isSelected ? "bg-[#F0F8FF] border-blue-500" : (block.kind !== BlockType.Unchanged ? "hover:bg-[#F8F8F8] hover:border-gray-200" : "")
               )}
             >
               {settings.viewMode === ViewMode.Split ? (
@@ -218,7 +219,7 @@ export function ComparisonView() {
                 <div className="flex w-full flex-col">
                   {(() => {
                     if (block.kind === BlockType.Modified) {
-                      const lines: Array<UnifiedLineData> = [];
+                      const lines: Array<UnifiedLineData> = [ ];
                       block.oldLines.forEach(line => {
                         if (line.kind !== DiffChangeType.Imaginary) {
                           lines.push({
@@ -263,7 +264,7 @@ export function ComparisonView() {
                       ));
                     } else {
                       return block.oldLines.map((line, idx) => {
-                        const newLine = block.newLines[idx];
+                        const newLine = block.newLines[ idx ];
                         const isRemoved = block.kind === BlockType.Removed;
                         const isAdded = block.kind === BlockType.Added;
 
@@ -283,7 +284,7 @@ export function ComparisonView() {
                               {isRemoved ? "-" : isAdded ? "+" : " "}
                             </div>
                             <div className="flex-1 px-2 py-0.5 font-mono break-all whitespace-pre-wrap">
-                              {(isAdded ? newLine?.fragments || [] : line.fragments).map((frag, fIdx) => (
+                              {(isAdded ? newLine?.fragments || [ ] : line.fragments).map((frag, fIdx) => (
                                 <span key={fIdx} className={getFragmentColorClass(frag.kind, frag.isWhitespaceChange, settings.ignoreWhitespace)}>
                                   {frag.text}
                                 </span>
@@ -300,6 +301,7 @@ export function ComparisonView() {
             </div>
           ))}
         </div>
+        
         <DiffMinimap
           blocks={comparisonResult.blocks}
           ignoreWhitespace={settings.ignoreWhitespace}

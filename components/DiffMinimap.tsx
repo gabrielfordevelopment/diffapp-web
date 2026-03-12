@@ -15,7 +15,7 @@ export function DiffMinimap({ blocks, ignoreWhitespace, onScrollRequest }: DiffM
     let totalHeight = 0;
 
     for (let i = 0; i < blocks.length; i++) {
-      totalHeight += Math.max(blocks[i].oldLines.length, blocks[i].newLines.length);
+      totalHeight += Math.max(blocks[ i ].oldLines.length, blocks[ i ].newLines.length);
     }
 
     if (totalHeight === 0) {
@@ -23,10 +23,10 @@ export function DiffMinimap({ blocks, ignoreWhitespace, onScrollRequest }: DiffM
     }
 
     let currentIndex = 0;
-    const result = [];
+    const result = [ ];
 
     for (let i = 0; i < blocks.length; i++) {
-      const block = blocks[i];
+      const block = blocks[ i ];
       const height = Math.max(block.oldLines.length, block.newLines.length);
 
       if (block.kind !== BlockType.Unchanged) {
@@ -50,7 +50,7 @@ export function DiffMinimap({ blocks, ignoreWhitespace, onScrollRequest }: DiffM
     }
 
     return result;
-  }, [blocks, ignoreWhitespace]);
+  }, [ blocks, ignoreWhitespace ]);
 
   const handleTrackClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -71,7 +71,7 @@ export function DiffMinimap({ blocks, ignoreWhitespace, onScrollRequest }: DiffM
 
   return (
     <div
-      className="w-10 shrink-0 bg-[#F6F8FA] border-l border-r border-gray-300 relative cursor-pointer mr-1"
+      className="w-6 shrink-0 bg-[#F6F8FA] border-l border-r border-gray-300 relative cursor-pointer mr-1"
       onClick={handleTrackClick}
     >
       {segments.map((seg) => (
