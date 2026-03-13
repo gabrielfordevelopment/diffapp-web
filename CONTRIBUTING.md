@@ -17,7 +17,7 @@ Clone the forked repository to your local machine.
 
 ### 3. Create a Branch
 
-Always create a new branch for your changes. Avoid working directly on the `main` branch. Use descriptive names for your branches:
+Always create a new branch for your changes. Avoid working directly on the `main` or `development` branch. Use descriptive names for your branches:
 
 ```
 git checkout -b feature/your-amazing-feature
