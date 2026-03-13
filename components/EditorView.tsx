@@ -12,6 +12,8 @@ export function EditorView() {
   const { isInputExpanded, toggleInputPanel, comparisonResult } = useEditorStore();
   const { settings, updateSettings } = useSettingsStore();
 
+  const hasResult = comparisonResult && comparisonResult.blocks.length > 0;
+
   return (
     <div className="flex h-full w-full overflow-hidden bg-bg-primary">
       <div className="flex shrink-0 border-r border-border-default bg-bg-secondary transition-all duration-300">
@@ -48,19 +50,11 @@ export function EditorView() {
       <div className="flex flex-1 flex-col overflow-hidden">
         <div 
           className={clsx(
-            "overflow-hidden bg-bg-primary relative",
-            (comparisonResult || !isInputExpanded) ? "flex-1" : "hidden"
+            "flex flex-col bg-bg-primary relative",
+            (hasResult || !isInputExpanded) ? "flex-1 overflow-hidden" : "shrink-0"
           )}
         >
-          {comparisonResult ? (
-            <ComparisonView />
-          ) : (
-            !isInputExpanded && (
-              <div className="flex h-full w-full items-center justify-center">
-                <p className="text-text-secondary">No comparison generated yet.</p>
-              </div>
-            )
-          )}
+          <ComparisonView />
         </div>
 
         <button
@@ -76,7 +70,7 @@ export function EditorView() {
           <div 
             className={clsx(
               "shrink-0 border-border-default flex flex-col",
-              comparisonResult ? "h-1/2 min-h-[300px] border-t" : "flex-1"
+              hasResult ? "h-1/2 min-h-[300px] border-t" : "flex-1"
             )}
           >
             <InputView />

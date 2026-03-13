@@ -9,6 +9,13 @@
   --color-border-default: var(--border-default);
   --color-accent-primary: var(--accent-primary);
   --color-accent-hover: var(--accent-hover);
+  
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-bg: var(--danger-bg);
+  --color-success: var(--success);
+  --color-success-hover: var(--success-hover);
+
   --color-diff-added-bg: var(--diff-added-bg);
   --color-diff-added-fg: var(--diff-added-fg);
   --color-diff-removed-bg: var(--diff-removed-bg);
@@ -28,6 +35,13 @@
   --border-default: #d1d5db;
   --accent-primary: #2563eb;
   --accent-hover: #1d4ed8;
+  
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --danger-bg: #fef2f2;
+  --success: #16a34a;
+  --success-hover: #15803d;
+
   --diff-added-bg: #e6ffed;
   --diff-added-fg: #acf2bd;
   --diff-removed-bg: #ffeef0;
@@ -47,6 +61,13 @@
   --border-default: #30363d;
   --accent-primary: #3b82f6;
   --accent-hover: #60a5fa;
+
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  --danger-bg: #450a0a;
+  --success: #22c55e;
+  --success-hover: #16a34a;
+
   --diff-added-bg: #04260f;
   --diff-added-fg: #2ea043;
   --diff-removed-bg: #3b0b12;

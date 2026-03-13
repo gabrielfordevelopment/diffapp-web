@@ -52,7 +52,7 @@ export function HistoryView() {
         {items.length > 0 && (
           <button
             onClick={handleDeleteAll}
-            className="flex items-center gap-2 rounded bg-diff-removed-fg px-4 py-2 text-sm font-semibold text-white transition-colors hover:opacity-80"
+            className="flex items-center gap-2 rounded bg-danger px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-danger-hover"
             title="Clear all history"
           >
             <MdDelete className="text-lg" />
@@ -90,7 +90,7 @@ export function HistoryView() {
 
                   <div className="mx-4 flex flex-1 items-center gap-4 overflow-hidden">
                     <div className="flex flex-1 flex-col overflow-hidden">
-                      <span className="mb-1 text-[11px] font-semibold text-diff-removed-fg">
+                      <span className="mb-1 text-[11px] font-semibold text-danger">
                         {getLineCount(item.originalText)} lines
                       </span>
                       <div className="flex flex-col gap-0.5 rounded bg-bg-secondary px-3 py-2">
@@ -105,7 +105,7 @@ export function HistoryView() {
                     <MdArrowForward className="text-lg shrink-0 text-text-secondary" />
 
                     <div className="flex flex-1 flex-col overflow-hidden">
-                      <span className="mb-1 text-[11px] font-semibold text-diff-added-fg">
+                      <span className="mb-1 text-[11px] font-semibold text-success">
                         {getLineCount(item.modifiedText)} lines
                       </span>
                       <div className="flex flex-col gap-0.5 rounded bg-bg-secondary px-3 py-2">
@@ -132,7 +132,7 @@ export function HistoryView() {
                     </button>
                     <button
                       onClick={(e) => handleDeleteItem(e, item.id)}
-                      className="rounded p-2 text-text-secondary transition-colors hover:bg-hover-overlay hover:text-diff-removed-fg"
+                      className="rounded p-2 text-text-secondary transition-colors hover:bg-hover-overlay hover:text-danger"
                       title="Delete this item"
                     >
                       <MdDelete className="text-2xl" />

@@ -102,7 +102,7 @@ export function SettingsView() {
       <div className="flex flex-col gap-3 mt-4 border-t border-border-default pt-6">
         <button
           onClick={resetToDefaults}
-          className="w-full py-2 bg-diff-removed-bg text-diff-removed-fg hover:opacity-80 rounded text-sm font-semibold transition-colors border border-diff-removed-fg"
+          className="w-full py-2 bg-danger-bg text-danger hover:brightness-95 rounded text-sm font-semibold transition-all border border-danger/20"
         >
           Reset to defaults
         </button>
