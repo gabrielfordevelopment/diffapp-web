@@ -41,8 +41,10 @@ git checkout -b fix/issue-description
 
 Write clear and concise commit messages explaining _what_ you changed and _why_.
 
+**⚠️ IMPORTANT: Sign Your Commits** Our CI pipeline requires all commits to be signed (e.g., via GPG, SSH, or S/MIME) to be accepted. You can sign your commit by adding the `-S` flag:
+
 ```
-git commit -m "Add: unified view toggle feature"
+git commit -S -m "Add: unified view toggle feature"
 
 ```
 
