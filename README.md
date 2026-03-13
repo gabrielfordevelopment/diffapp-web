@@ -90,8 +90,8 @@ To run this project locally, you need Node.js installed on your machine.
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [CONTRIBUTING.md](https://www.google.com/search?q=CONTRIBUTING.md "null") file for details on how to get started.
+We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) file for details on how to get started.
 
 ## 📄 License
 
-This project is licensed under the [MIT License](https://www.google.com/search?q=LICENSE "null") - see the https://www.google.com/search?q=LICENSE file for details.
+This project is licensed under the [MIT License](LICENSE) - see the LICENSE file for details.
