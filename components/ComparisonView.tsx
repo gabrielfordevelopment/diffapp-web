@@ -30,6 +30,7 @@ export function ComparisonView() {
 
   const [copiedSide, setCopiedSide] = useState<"left" | "right" | null>(null);
   const [hoveredBlockId, setHoveredBlockId] = useState<string | null>(null);
+  const [selectionSide, setSelectionSide] = useState<"left" | "right" | null>(null);
 
   useEffect(() => {
     if (leftText || rightText) {
@@ -37,11 +38,16 @@ export function ComparisonView() {
     }
   }, [settings.precision]);
 
+  useEffect(() => {
+    selectBlock(null);
+  }, [settings.ignoreWhitespace]);
+
   const stats = useMemo(() => {
     return calculateStats(comparisonResult?.blocks, settings.ignoreWhitespace);
   }, [comparisonResult, settings.ignoreWhitespace]);
 
   const leftLineCount = useMemo(() => leftText ? leftText.split(/\r?\n/).length : 0, [leftText]);
+
   const rightLineCount = useMemo(() => rightText ? rightText.split(/\r?\n/).length : 0, [rightText]);
 
   const handleCopy = (text: string, side: "left" | "right") => {
@@ -108,7 +114,7 @@ export function ComparisonView() {
 
   return (
     <div className={clsx("flex w-full flex-col bg-bg-primary relative", !hideBody && "h-full")}>
-      <div className="flex items-center justify-between border-b border-border-default bg-bg-secondary px-4 py-1.5 shrink-0 z-20">
+      <div className="flex items-center justify-between border-b border-border-default bg-bg-secondary px-4 py-1.5 shrink-0 z-20 select-none">
         <div className="flex flex-1 items-center justify-between">
           <div className="flex items-center gap-2">
             <MdDescription className="text-xl text-text-secondary" />
@@ -187,7 +193,9 @@ export function ComparisonView() {
               <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar pr-8" ref={unifiedScrollRef}>
                 <div className="flex flex-col min-w-full h-max pb-8 w-full">
                   {comparisonResult.blocks.map((block) => {
-                    const isHovered = hoveredBlockId === block.id && block.kind !== BlockType.Unchanged && !block.isSelected;
+                    const isIgnoredWhitespace = settings.ignoreWhitespace && block.isWhitespaceChange;
+                    const isSelectable = block.kind !== BlockType.Unchanged && !isIgnoredWhitespace;
+                    const isHovered = hoveredBlockId === block.id && isSelectable && !block.isSelected;
                     const maxLines = Math.max(block.oldLines.length, block.newLines.length);
 
                     return (
@@ -196,11 +204,11 @@ export function ComparisonView() {
                         id={`block-unified-${block.id}`}
                         onMouseEnter={() => setHoveredBlockId(block.id)}
                         onMouseLeave={() => setHoveredBlockId(null)}
-                        onClick={block.kind !== BlockType.Unchanged ? () => selectBlock(block.id) : undefined}
+                        onClick={isSelectable ? () => selectBlock(block.id) : undefined}
                         className={clsx(
                           "flex flex-col border-y-2 border-transparent w-full relative",
-                          block.kind !== BlockType.Unchanged && "cursor-pointer",
-                          block.isSelected && "bg-bg-selected border-accent-primary"
+                          isSelectable && "cursor-pointer",
+                          block.isSelected && isSelectable && "bg-bg-selected border-accent-primary"
                         )}
                       >
                         {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
@@ -211,7 +219,10 @@ export function ComparisonView() {
 
                             return (
                               <div key={idx} className="flex min-h-[24px] w-full">
-                                <div className={clsx("flex flex-1 w-1/2", getBlockColorClass(block.kind, "old", block.isWhitespaceChange, settings.ignoreWhitespace), oldLine.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg")}>
+                                <div
+                                  onMouseDown={() => setSelectionSide("left")}
+                                  className={clsx("flex flex-1 w-1/2", getBlockColorClass(block.kind, "old", block.isWhitespaceChange, settings.ignoreWhitespace), oldLine.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg", selectionSide === "right" && "select-none")}
+                                >
                                   <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-0 z-10">
                                     {oldLine.lineNumber}
                                   </div>
@@ -223,7 +234,10 @@ export function ComparisonView() {
                                     ))}
                                   </div>
                                 </div>
-                                <div className={clsx("flex flex-1 w-1/2 border-l border-border-default", getBlockColorClass(block.kind, "new", block.isWhitespaceChange, settings.ignoreWhitespace), newLine.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg")}>
+                                <div
+                                  onMouseDown={() => setSelectionSide("right")}
+                                  className={clsx("flex flex-1 w-1/2 border-l border-border-default", getBlockColorClass(block.kind, "new", block.isWhitespaceChange, settings.ignoreWhitespace), newLine.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg", selectionSide === "left" && "select-none")}
+                                >
                                   <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-0 z-10">
                                     {newLine.lineNumber}
                                   </div>
@@ -239,8 +253,8 @@ export function ComparisonView() {
                             );
                           })}
                         </div>
-                        {block.isSelected && block.kind !== BlockType.Unchanged && (
-                          <div className="flex items-center justify-between w-full border-t border-accent-primary bg-bg-selected relative h-12 z-20 px-4">
+                        {block.isSelected && isSelectable && (
+                          <div className="flex items-center justify-between w-full border-t border-accent-primary bg-bg-selected relative h-12 z-20 px-4 select-none">
                             <div className="flex items-center gap-4 flex-1 justify-end pr-4 border-r border-transparent">
                               <button
                                 onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.LeftToRight, settings); }}
@@ -274,21 +288,28 @@ export function ComparisonView() {
               </div>
             ) : (
               <div className="flex h-full w-full">
-                <div className="flex-1 overflow-auto hide-vertical-scrollbar border-r border-border-default" ref={leftScrollRef} onScroll={handleLeftScroll}>
+                <div
+                  className={clsx("flex-1 overflow-auto hide-vertical-scrollbar border-r border-border-default", selectionSide === "right" && "select-none")}
+                  ref={leftScrollRef}
+                  onScroll={handleLeftScroll}
+                  onMouseDown={() => setSelectionSide("left")}
+                >
                   <div className={clsx("flex flex-col min-w-full h-max pb-8", containerWidthClass)}>
                     {comparisonResult.blocks.map((block) => {
-                      const isHovered = hoveredBlockId === block.id && block.kind !== BlockType.Unchanged && !block.isSelected;
+                      const isIgnoredWhitespace = settings.ignoreWhitespace && block.isWhitespaceChange;
+                      const isSelectable = block.kind !== BlockType.Unchanged && !isIgnoredWhitespace;
+                      const isHovered = hoveredBlockId === block.id && isSelectable && !block.isSelected;
                       return (
                         <div
                           key={`left-${block.id}`}
                           id={`block-left-${block.id}`}
                           onMouseEnter={() => setHoveredBlockId(block.id)}
                           onMouseLeave={() => setHoveredBlockId(null)}
-                          onClick={block.kind !== BlockType.Unchanged ? () => selectBlock(block.id) : undefined}
+                          onClick={isSelectable ? () => selectBlock(block.id) : undefined}
                           className={clsx(
                             "flex flex-col border-y-2 border-transparent w-full relative",
-                            block.kind !== BlockType.Unchanged && "cursor-pointer",
-                            block.isSelected && "bg-bg-selected border-accent-primary"
+                            isSelectable && "cursor-pointer",
+                            block.isSelected && isSelectable && "bg-bg-selected border-accent-primary"
                           )}
                         >
                           {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
@@ -308,8 +329,8 @@ export function ComparisonView() {
                               </div>
                             ))}
                           </div>
-                          {block.isSelected && block.kind !== BlockType.Unchanged && (
-                            <div className="flex items-center justify-end w-full min-w-full border-t border-accent-primary bg-bg-selected relative h-12 z-20">
+                          {block.isSelected && isSelectable && (
+                            <div className="flex items-center justify-end w-full min-w-full border-t border-accent-primary bg-bg-selected relative h-12 z-20 select-none">
                               <div className="sticky right-0 flex items-center justify-end gap-4 px-4 h-full">
                                 <button
                                   onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.LeftToRight, settings); }}
@@ -333,21 +354,28 @@ export function ComparisonView() {
                   </div>
                 </div>
 
-                <div className="flex-1 overflow-auto custom-scrollbar" ref={rightScrollRef} onScroll={handleRightScroll}>
+                <div
+                  className={clsx("flex-1 overflow-auto custom-scrollbar", selectionSide === "left" && "select-none")}
+                  ref={rightScrollRef}
+                  onScroll={handleRightScroll}
+                  onMouseDown={() => setSelectionSide("right")}
+                >
                   <div className={clsx("flex flex-col min-w-full h-max pb-8 pr-8", containerWidthClass)}>
                     {comparisonResult.blocks.map((block) => {
-                      const isHovered = hoveredBlockId === block.id && block.kind !== BlockType.Unchanged && !block.isSelected;
+                      const isIgnoredWhitespace = settings.ignoreWhitespace && block.isWhitespaceChange;
+                      const isSelectable = block.kind !== BlockType.Unchanged && !isIgnoredWhitespace;
+                      const isHovered = hoveredBlockId === block.id && isSelectable && !block.isSelected;
                       return (
                         <div
                           key={`right-${block.id}`}
                           id={`block-right-${block.id}`}
                           onMouseEnter={() => setHoveredBlockId(block.id)}
                           onMouseLeave={() => setHoveredBlockId(null)}
-                          onClick={block.kind !== BlockType.Unchanged ? () => selectBlock(block.id) : undefined}
+                          onClick={isSelectable ? () => selectBlock(block.id) : undefined}
                           className={clsx(
                             "flex flex-col border-y-2 border-transparent w-full relative",
-                            block.kind !== BlockType.Unchanged && "cursor-pointer",
-                            block.isSelected && "bg-bg-selected border-accent-primary"
+                            isSelectable && "cursor-pointer",
+                            block.isSelected && isSelectable && "bg-bg-selected border-accent-primary"
                           )}
                         >
                           {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
@@ -367,8 +395,8 @@ export function ComparisonView() {
                               </div>
                             ))}
                           </div>
-                          {block.isSelected && block.kind !== BlockType.Unchanged && (
-                            <div className="flex items-center justify-start w-full min-w-full border-t border-accent-primary bg-bg-selected relative h-12 z-20">
+                          {block.isSelected && isSelectable && (
+                            <div className="flex items-center justify-start w-full min-w-full border-t border-accent-primary bg-bg-selected relative h-12 z-20 select-none">
                               <div className="sticky left-0 flex items-center justify-start px-4 h-full">
                                 <button
                                   onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.RightToLeft, settings); }}
@@ -391,18 +419,20 @@ export function ComparisonView() {
             <div className="flex-1 overflow-auto custom-scrollbar" ref={unifiedScrollRef}>
               <div className={clsx("flex flex-col min-w-full h-max pb-8 pr-8", containerWidthClass)}>
                 {comparisonResult.blocks.map((block) => {
-                  const isHovered = hoveredBlockId === block.id && block.kind !== BlockType.Unchanged && !block.isSelected;
+                  const isIgnoredWhitespace = settings.ignoreWhitespace && block.isWhitespaceChange;
+                  const isSelectable = block.kind !== BlockType.Unchanged && !isIgnoredWhitespace;
+                  const isHovered = hoveredBlockId === block.id && isSelectable && !block.isSelected;
                   return (
                     <div
                       key={block.id}
                       id={`block-unified-${block.id}`}
                       onMouseEnter={() => setHoveredBlockId(block.id)}
                       onMouseLeave={() => setHoveredBlockId(null)}
-                      onClick={block.kind !== BlockType.Unchanged ? () => selectBlock(block.id) : undefined}
+                      onClick={isSelectable ? () => selectBlock(block.id) : undefined}
                       className={clsx(
                         "flex flex-col border-y-2 border-transparent w-full relative",
-                        block.kind !== BlockType.Unchanged && "cursor-pointer",
-                        block.isSelected && "bg-bg-selected border-accent-primary"
+                        isSelectable && "cursor-pointer",
+                        block.isSelected && isSelectable && "bg-bg-selected border-accent-primary"
                       )}
                     >
                       {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
@@ -488,8 +518,8 @@ export function ComparisonView() {
                           }
                         })()}
                       </div>
-                      {block.isSelected && block.kind !== BlockType.Unchanged && (
-                        <div className="flex items-center justify-center w-full min-w-full border-t border-accent-primary bg-bg-selected relative h-12 z-20">
+                      {block.isSelected && isSelectable && (
+                        <div className="flex items-center justify-center w-full min-w-full border-t border-accent-primary bg-bg-selected relative h-12 z-20 select-none">
                           <div className="sticky left-1/2 -translate-x-1/2 flex items-center justify-center gap-4 px-4 h-full w-max">
                             <button
                               onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.LeftToRight, settings); }}
