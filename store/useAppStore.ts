@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type AppView = "editor" | "history";
+export type AppView = "editor" | "history" | "settings";
 
 interface AppState {
   currentView: AppView;

@@ -4,11 +4,9 @@ import { PrecisionLevel, ViewMode } from "../types";
 import { useSettingsStore } from "../store/useSettingsStore";
 import { useEditorStore } from "../store/useEditorStore";
 import { originalTestText, modifiedTestText } from "../utils/testData";
-import { AVAILABLE_THEMES } from "../config/themes";
-import { MdExpandMore } from "react-icons/md";
 import clsx from "clsx";
 
-export function SettingsView() {
+export function OptionsView() {
   const { settings, updateSettings, resetToDefaults } = useSettingsStore();
   const { setLeftText, setRightText, compare } = useEditorStore();
 
@@ -49,25 +47,6 @@ export function SettingsView() {
 
       <div className="flex flex-col gap-3">
         <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider">Appearance</h3>
-
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-text-primary">Theme</span>
-          <div className="relative flex items-center">
-            <select
-              value={settings.theme}
-              onChange={(e) => updateSettings({ theme: e.target.value })}
-              className="appearance-none bg-bg-secondary text-text-primary border border-border-default rounded-md pl-3 pr-8 py-1.5 text-sm outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary cursor-pointer transition-colors"
-            >
-              {AVAILABLE_THEMES.map((theme) => (
-                <option key={theme.id} value={theme.id}>
-                  {theme.name}
-                </option>
-              ))}
-            </select>
-            <MdExpandMore className="absolute right-2 text-xl text-text-secondary pointer-events-none" />
-          </div>
-        </div>
-
         <label className="flex items-center gap-2 cursor-pointer mt-1">
           <input
             type="checkbox"
@@ -125,9 +104,6 @@ export function SettingsView() {
         >
           Reset to defaults
         </button>
-        <div className="text-center text-xs text-text-secondary mt-2">
-          Version 1.0.0
-        </div>
       </div>
     </div>
   );

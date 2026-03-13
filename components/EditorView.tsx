@@ -3,7 +3,7 @@
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight, MdKeyboardArrowUp, MdTune } from "react-icons/md";
 import { useEditorStore } from "../store/useEditorStore";
 import { useSettingsStore } from "../store/useSettingsStore";
-import { SettingsView } from "./SettingsView";
+import { OptionsView } from "./OptionsView";
 import { InputView } from "./InputView";
 import { ComparisonView } from "./ComparisonView";
 import clsx from "clsx";
@@ -19,35 +19,35 @@ export function EditorView() {
       <div
         className={clsx(
           "flex flex-col bg-bg-secondary transition-all duration-300 overflow-hidden h-full shrink-0 z-10",
-          settings.isSettingsPanelOpen ? "w-64 border-r border-border-default" : "w-0 border-r-0"
+          settings.isOptionsPanelOpen ? "w-64 border-r border-border-default" : "w-0 border-r-0"
         )}
       >
         <div className="flex w-64 flex-col h-full shrink-0">
           <div className="flex items-center justify-between border-b border-border-default p-4 shrink-0 bg-bg-secondary">
             <div className="flex items-center gap-2">
               <MdTune className="text-xl text-text-secondary" />
-              <h2 className="text-base font-bold text-text-primary">Settings</h2>
+              <h2 className="text-base font-bold text-text-primary">Options</h2>
             </div>
             <button
-              onClick={() => updateSettings({ isSettingsPanelOpen: false })}
+              onClick={() => updateSettings({ isOptionsPanelOpen: false })}
               className="flex items-center justify-center rounded p-1 text-text-secondary hover:bg-hover-overlay hover:text-text-primary transition-colors"
-              title="Close Settings"
+              title="Close Options"
             >
               <MdKeyboardArrowLeft className="text-2xl" />
             </button>
           </div>
           <div className="flex-1 overflow-y-auto custom-scrollbar">
-            <SettingsView />
+            <OptionsView />
           </div>
         </div>
       </div>
 
       <div className="flex flex-1 flex-col overflow-hidden relative z-0">
-        {!settings.isSettingsPanelOpen && (
+        {!settings.isOptionsPanelOpen && (
           <button
-            onClick={() => updateSettings({ isSettingsPanelOpen: true })}
+            onClick={() => updateSettings({ isOptionsPanelOpen: true })}
             className="absolute left-0 top-6 z-30 flex h-12 w-6 items-center justify-center rounded-r-md bg-accent-primary text-white shadow-md hover:bg-accent-hover transition-colors"
-            title="Open Settings"
+            title="Open Options"
           >
             <MdKeyboardArrowRight className="text-2xl" />
           </button>

@@ -10,36 +10,50 @@ export function Header() {
 
   return (
     <header className="flex h-12 shrink-0 items-center justify-between border-b border-border-default bg-bg-primary px-6 relative z-50">
-      <div className="flex items-center gap-3">
-        <MdDifference className="text-2xl text-accent-primary" />
-        <h1 className="text-lg font-bold text-text-primary">DiffApp</h1>
+      <div className="flex items-center gap-8 h-full">
+        <div className="flex items-center gap-3">
+          <MdDifference className="text-2xl text-accent-primary" />
+          <h1 className="text-lg font-bold text-text-primary">DiffApp</h1>
+        </div>
+        <nav className="flex items-center gap-2 h-full">
+          <button
+            onClick={() => navigate("editor")}
+            className={clsx(
+              "relative flex h-full items-center px-4 text-sm font-semibold transition-colors",
+              "after:absolute after:bottom-0 after:left-0 after:h-1 after:w-full after:origin-center after:bg-accent-primary after:transition-transform after:duration-100",
+              currentView === "editor"
+                ? "text-accent-primary after:scale-x-100"
+                : "text-text-secondary hover:text-accent-primary after:scale-x-0 hover:after:scale-x-100"
+            )}
+          >
+            Editor
+          </button>
+          <button
+            onClick={() => navigate("history")}
+            className={clsx(
+              "relative flex h-full items-center px-4 text-sm font-semibold transition-colors",
+              "after:absolute after:bottom-0 after:left-0 after:h-1 after:w-full after:origin-center after:bg-accent-primary after:transition-transform after:duration-100",
+              currentView === "history"
+                ? "text-accent-primary after:scale-x-100"
+                : "text-text-secondary hover:text-accent-primary after:scale-x-0 hover:after:scale-x-100"
+            )}
+          >
+            History
+          </button>
+          <button
+            onClick={() => navigate("settings")}
+            className={clsx(
+              "relative flex h-full items-center px-4 text-sm font-semibold transition-colors",
+              "after:absolute after:bottom-0 after:left-0 after:h-1 after:w-full after:origin-center after:bg-accent-primary after:transition-transform after:duration-100",
+              currentView === "settings"
+                ? "text-accent-primary after:scale-x-100"
+                : "text-text-secondary hover:text-accent-primary after:scale-x-0 hover:after:scale-x-100"
+            )}
+          >
+            Settings
+          </button>
+        </nav>
       </div>
-      <nav className="flex items-center gap-2 h-full">
-        <button
-          onClick={() => navigate("editor")}
-          className={clsx(
-            "flex h-full items-center px-4 text-sm font-semibold transition-colors relative",
-            currentView === "editor" ? "text-accent-primary" : "text-text-secondary hover:text-accent-primary"
-          )}
-        >
-          Editor
-          {currentView === "editor" && (
-            <span className="absolute bottom-0 left-0 h-1 w-full bg-accent-primary" />
-          )}
-        </button>
-        <button
-          onClick={() => navigate("history")}
-          className={clsx(
-            "flex h-full items-center px-4 text-sm font-semibold transition-colors relative",
-            currentView === "history" ? "text-accent-primary" : "text-text-secondary hover:text-accent-primary"
-          )}
-        >
-          History
-          {currentView === "history" && (
-            <span className="absolute bottom-0 left-0 h-1 w-full bg-accent-primary" />
-          )}
-        </button>
-      </nav>
     </header>
   );
 }
