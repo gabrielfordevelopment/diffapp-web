@@ -9,6 +9,29 @@ It is designed to provide high-precision text comparison and flexible merging ca
 > 
 > This project is currently **under development**.
 
+## 🎯 Project Goals & Vision
+
+Our primary goal is to build a free and open-source text comparison tool inspired by **Diffchecker**. At this stage, we are focusing strictly on **Text-to-Text comparison**.
+
+### 🥇 Top Priorities: The Diffing Engine
+
+Diffchecker serves as our main inspiration, particularly for its highly accurate diff highlighting. Our absolute top priority is to build a diffing engine that achieves this same level of quality. Specifically, we want to master:
+
+-   **"Word" and "Character" precision levels**
+    
+-   **"Ignore Whitespace" functionality**
+    
+
+Adopting these core concepts will allow us to provide a seamless highlighting experience. To assist with this, we have included a **"Debug: TestText"** button in the application. This dynamically loads a pre-defined original and modified text pair, allowing us to generate a result in our app and manually compare it side-by-side with our inspiration to verify the accuracy of our algorithm.
+
+### 🎨 Low Priorities: UI/UX & Theming
+
+Currently, UI/UX design, detailed styling, and theming are low priorities. While the visual aspects will eventually need polishing, **perfecting the core diffing engine is what matters most right now**.
+
+_(However, any sensible UI improvements or design modernizations are still warmly welcome if they enhance the overall experience!)_
+
+> **Ultimately, refining the diffing logic and the highlighting engine is our number one priority; everything else is secondary.**
+
 ## 🚀 Main Features
 
 -   **Dual View Modes:** Switch between **Split (Side-by-Side)** and **Unified** views to visualize differences in the way that suits you best.
