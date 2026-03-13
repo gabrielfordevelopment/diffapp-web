@@ -9,15 +9,8 @@ export function generatePreviewLines(text: string | null | undefined, maxLines: 
   if (!text) {
     return [ ];
   }
-  
-  const lines = text.split(/\r?\n/);
-  const previewLines: Array<string> = [ ];
-  
-  for (let i = 0; i < lines.length && i < maxLines; i++) {
-    previewLines.push(lines[ i ] || " ");
-  }
-  
-  return previewLines;
+
+  return text.split(/\r?\n/).slice(0, maxLines);
 }
 
 export function getRelativeTime(dateString: string): string {
@@ -29,22 +22,22 @@ export function getRelativeTime(dateString: string): string {
   if (diffMins < 1) {
     return "Just now";
   }
-  
+
   if (diffMins < 60) {
     return `${diffMins} mins ago`;
   }
-  
+
   const diffHours = Math.floor(diffMins / 60);
-  
+
   if (diffHours < 24) {
     return `${diffHours} hours ago`;
   }
-  
+
   const diffDays = Math.floor(diffHours / 24);
-  
+
   if (diffDays < 7) {
     return `${diffDays} days ago`;
   }
-  
+
   return date.toLocaleDateString();
 }

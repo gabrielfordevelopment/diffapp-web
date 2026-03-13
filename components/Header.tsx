@@ -9,7 +9,7 @@ export function Header() {
   const navigate = useAppStore((state) => state.navigate);
 
   return (
-    <header className="flex h-12 shrink-0 items-center justify-between border-b border-border-default bg-bg-primary px-6">
+    <header className="flex h-12 shrink-0 items-center justify-between border-b border-border-default bg-bg-primary px-6 relative z-50">
       <div className="flex items-center gap-3">
         <MdDifference className="text-2xl text-accent-primary" />
         <h1 className="text-lg font-bold text-text-primary">DiffApp</h1>

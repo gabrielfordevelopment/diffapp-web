@@ -2,12 +2,21 @@
 
 import { PrecisionLevel, ViewMode } from "../types";
 import { useSettingsStore } from "../store/useSettingsStore";
+import { useEditorStore } from "../store/useEditorStore";
+import { originalTestText, modifiedTestText } from "../utils/testData";
 import { AVAILABLE_THEMES } from "../config/themes";
 import { MdExpandMore } from "react-icons/md";
 import clsx from "clsx";
 
 export function SettingsView() {
   const { settings, updateSettings, resetToDefaults } = useSettingsStore();
+  const { setLeftText, setRightText, compare } = useEditorStore();
+
+  const handleLoadTestData = () => {
+    setLeftText(originalTestText);
+    setRightText(modifiedTestText);
+    compare(settings, true, false);
+  };
 
   return (
     <div className="flex flex-col gap-6 p-4">
@@ -105,8 +114,14 @@ export function SettingsView() {
 
       <div className="flex flex-col gap-3 mt-4 border-t border-border-default pt-6">
         <button
+          onClick={handleLoadTestData}
+          className="w-full py-2 bg-accent-primary text-white hover:bg-accent-hover rounded text-sm font-semibold transition-all shadow-sm"
+        >
+          Debug: TestText
+        </button>
+        <button
           onClick={resetToDefaults}
-          className="w-full py-2 bg-danger-bg text-danger hover:brightness-95 rounded text-sm font-semibold transition-all border border-danger/20"
+          className="w-full py-2 bg-danger-bg text-danger hover:brightness-95 rounded text-sm font-semibold transition-all border border-danger/20 mt-2"
         >
           Reset to defaults
         </button>

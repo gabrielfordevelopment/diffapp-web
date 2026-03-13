@@ -42,7 +42,6 @@ export function ComparisonView() {
   }, [ comparisonResult, settings.ignoreWhitespace ]);
 
   const leftLineCount = useMemo(() => leftText ? leftText.split(/\r?\n/).length : 0, [ leftText ]);
-
   const rightLineCount = useMemo(() => rightText ? rightText.split(/\r?\n/).length : 0, [ rightText ]);
 
   const handleCopy = (text: string, side: "left" | "right") => {
@@ -53,12 +52,10 @@ export function ComparisonView() {
     setTimeout(() => {
       setCopiedSide((prev) => (prev === side ? null : prev));
     }, 2000);
-
   };
 
   const handleScrollRequest = (percentage: number) => {
-    const container = (settings.viewMode === ViewMode.Split && !settings.isWordWrapEnabled) ?
-      leftScrollRef.current : unifiedScrollRef.current;
+    const container = (settings.viewMode === ViewMode.Split && !settings.isWordWrapEnabled) ? leftScrollRef.current : unifiedScrollRef.current;
     if (container) {
       const targetScroll = percentage * (container.scrollHeight - container.clientHeight);
       container.scrollTo({ top: targetScroll, behavior: "smooth" });
@@ -107,8 +104,7 @@ export function ComparisonView() {
   const hasResult = comparisonResult && comparisonResult.blocks.length > 0;
   const hideBody = !hasResult && isInputExpanded;
 
-  const wordWrapClass = settings.isWordWrapEnabled ?
-    "break-all whitespace-pre-wrap" : "whitespace-pre";
+  const wordWrapClass = settings.isWordWrapEnabled ? "break-all whitespace-pre-wrap" : "whitespace-pre";
   const containerWidthClass = settings.isWordWrapEnabled ? "w-full" : "min-w-max";
 
   return (
@@ -193,6 +189,8 @@ export function ComparisonView() {
                 <div className="flex flex-col min-w-full h-max pb-8 w-full">
                   {comparisonResult.blocks.map((block) => {
                     const isHovered = hoveredBlockId === block.id && block.kind !== BlockType.Unchanged && !block.isSelected;
+                    const maxLines = Math.max(block.oldLines.length, block.newLines.length);
+
                     return (
                       <div
                         key={`split-wrap-${block.id}`}
@@ -208,8 +206,10 @@ export function ComparisonView() {
                       >
                         {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
                         <div className="flex flex-col w-full relative z-0">
-                          {block.oldLines.map((oldLine, idx) => {
-                            const newLine = block.newLines[ idx ];
+                          {Array.from({ length: maxLines }).map((_, idx) => {
+                            const oldLine = block.oldLines[ idx ] || { lineNumber: null, kind: DiffChangeType.Imaginary, fragments: [ ] };
+                            const newLine = block.newLines[ idx ] || { lineNumber: null, kind: DiffChangeType.Imaginary, fragments: [ ] };
+
                             return (
                               <div key={idx} className="flex min-h-[ 24px ] w-full">
                                 <div className={clsx("flex flex-1 w-1/2", getBlockColorClass(block.kind, "old", block.isWhitespaceChange, settings.ignoreWhitespace), oldLine.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg")}>
@@ -454,7 +454,9 @@ export function ComparisonView() {
                               </div>
                             ));
                           } else {
-                            return block.oldLines.map((line, idx) => {
+                            const maxLines = Math.max(block.oldLines.length, block.newLines.length);
+                            return Array.from({ length: maxLines }).map((_, idx) => {
+                              const oldLine = block.oldLines[ idx ];
                               const newLine = block.newLines[ idx ];
                               const isRemoved = block.kind === BlockType.Removed;
                               const isAdded = block.kind === BlockType.Added;
@@ -466,7 +468,7 @@ export function ComparisonView() {
                               return (
                                 <div key={idx} className={clsx("flex min-h-[ 24px ] w-full", bgClass)}>
                                   <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary py-0.5 sticky left-0 z-10">
-                                    {line.lineNumber || ""}
+                                    {oldLine?.lineNumber || ""}
                                   </div>
                                   <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-[ 40px ] z-10">
                                     {newLine?.lineNumber || ""}
@@ -475,7 +477,7 @@ export function ComparisonView() {
                                     {isRemoved ? "-" : isAdded ? "+" : " "}
                                   </div>
                                   <div className={clsx("px-2 py-0.5 font-mono", wordWrapClass)}>
-                                    {(isAdded ? newLine?.fragments || [ ] : line.fragments).map((frag, fIdx) => (
+                                    {(isAdded ? newLine?.fragments || [ ] : oldLine?.fragments || [ ]).map((frag, fIdx) => (
                                       <span key={fIdx} className={getFragmentColorClass(frag.kind, frag.isWhitespaceChange, settings.ignoreWhitespace)}>
                                         {frag.text}
                                       </span>

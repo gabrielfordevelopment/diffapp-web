@@ -1,6 +1,6 @@
 "use client";
 
-import { MdKeyboardArrowRight, MdKeyboardArrowLeft, MdTune, MdBorderColor, MdExpandMore, MdExpandLess } from "react-icons/md";
+import { MdBorderColor, MdKeyboardArrowDown, MdKeyboardArrowUp, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdTune } from "react-icons/md";
 import { useEditorStore } from "../store/useEditorStore";
 import { useSettingsStore } from "../store/useSettingsStore";
 import { SettingsView } from "./SettingsView";
@@ -16,66 +16,62 @@ export function EditorView() {
 
   return (
     <div className="flex h-full w-full overflow-hidden bg-bg-primary">
-      <div className="flex shrink-0 border-r border-border-default bg-bg-secondary transition-all duration-300">
-        {!settings.isSettingsPanelOpen ? (
-          <button
-            onClick={() => updateSettings({ isSettingsPanelOpen: true })}
-            className="flex h-full w-8 items-center justify-center hover:bg-hover-overlay transition-colors"
-            title="Open Settings"
-          >
-            <MdKeyboardArrowRight className="text-2xl text-text-secondary" />
-          </button>
-        ) : (
-          <div className="flex w-64 flex-col h-full">
-            <div className="flex items-center justify-between border-b border-border-default p-4">
-              <div className="flex items-center gap-2">
-                <MdTune className="text-xl text-text-secondary" />
-                <h2 className="text-base font-bold text-text-primary">Settings</h2>
-              </div>
-              <button
-                onClick={() => updateSettings({ isSettingsPanelOpen: false })}
-                className="rounded p-1 hover:bg-hover-overlay transition-colors"
-                title="Close Settings"
-              >
-                <MdKeyboardArrowLeft className="text-2xl text-text-secondary" />
-              </button>
+      <div className="relative flex h-full shrink-0 z-30">
+        <div
+          className={clsx(
+            "flex flex-col bg-bg-secondary transition-all duration-300 overflow-hidden h-full border-border-default",
+            settings.isSettingsPanelOpen ? "w-64 border-r" : "w-0 border-r-0"
+          )}
+        >
+          <div className="flex w-64 flex-col h-full shrink-0">
+            <div className="flex items-center gap-2 border-b border-border-default p-4 shrink-0 bg-bg-secondary">
+              <MdTune className="text-xl text-text-secondary" />
+              <h2 className="text-base font-bold text-text-primary">Settings</h2>
             </div>
-            <div className="flex-1 overflow-y-auto">
-               <SettingsView />
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
+              <SettingsView />
             </div>
           </div>
-        )}
+        </div>
+
+        <button
+          onClick={() => updateSettings({ isSettingsPanelOpen: !settings.isSettingsPanelOpen })}
+          className="absolute top-14 -right-8 flex h-20 w-8 items-center justify-center rounded-r-md bg-accent-primary text-white shadow-md hover:bg-accent-hover transition-colors z-40"
+          title={settings.isSettingsPanelOpen ? "Close Settings" : "Open Settings"}
+        >
+          {settings.isSettingsPanelOpen ? <MdKeyboardArrowLeft className="text-3xl" /> : <MdKeyboardArrowRight className="text-3xl" />}
+        </button>
       </div>
 
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden relative z-0">
         <div
           className={clsx(
             "flex flex-col bg-bg-primary relative",
-            (hasResult || !isInputExpanded) ? "flex-1 overflow-hidden" : "shrink-0"
+            hasResult || !isInputExpanded ? "flex-1 overflow-hidden" : "shrink-0 h-0"
           )}
         >
           <ComparisonView />
         </div>
 
-        <button
-          onClick={toggleInputPanel}
-          className="flex w-full items-center justify-center gap-2 bg-accent-primary py-1.5 text-white hover:bg-accent-hover transition-colors shrink-0"
-        >
-          <MdBorderColor className="text-lg" />
-          <span className="text-sm font-semibold">Input / Editor</span>
-          {!isInputExpanded ? <MdExpandLess className="text-xl" /> : <MdExpandMore className="text-xl" />}
-        </button>
-
-        {isInputExpanded && (
-          <div
-            className={clsx(
-              "shrink-0 border-border-default flex flex-col",
-              hasResult ? "h-1/2 min-h-[ 300px ] border-t" : "flex-1"
-            )}
+        <div className="w-full h-12 shrink-0 flex items-center justify-center z-20 bg-bg-primary border-t border-b border-border-default shadow-sm relative">
+          <button
+            onClick={toggleInputPanel}
+            className="flex items-center gap-2 bg-accent-primary text-white hover:bg-accent-hover shadow-md px-6 py-1.5 rounded-full text-sm font-semibold transition-colors"
           >
-            <InputView />
-          </div>
-        )}
+            <MdBorderColor className="text-lg" />
+            <span>{isInputExpanded ? "Hide Input" : "Show Input"}</span>
+            {isInputExpanded ? <MdKeyboardArrowDown className="text-xl" /> : <MdKeyboardArrowUp className="text-xl" />}
+          </button>
+        </div>
+
+        <div
+          className={clsx(
+            "flex flex-col shrink-0 transition-all duration-300 ease-in-out overflow-hidden bg-bg-primary",
+            isInputExpanded ? (hasResult ? "h-[450px]" : "flex-1") : "h-0 opacity-0"
+          )}
+        >
+          <InputView />
+        </div>
       </div>
     </div>
   );
