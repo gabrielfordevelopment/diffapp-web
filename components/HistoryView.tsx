@@ -44,7 +44,7 @@ export function HistoryView() {
 
   return (
     <div className="flex h-full w-full flex-col bg-bg-secondary">
-      <div className="flex items-center justify-between border-b border-border-default bg-bg-primary px-6 py-4">
+      <div className="flex items-center justify-between border-b border-border-default bg-bg-primary px-6 py-1.5">
         <div className="flex items-center gap-3">
           <MdHistory className="text-2xl text-text-secondary" />
           <h2 className="text-xl font-bold text-text-primary">History</h2>
@@ -52,7 +52,7 @@ export function HistoryView() {
         {items.length > 0 && (
           <button
             onClick={handleDeleteAll}
-            className="flex items-center gap-2 rounded bg-danger px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-danger-hover"
+            className="flex items-center gap-1 rounded bg-danger px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-danger-hover"
             title="Clear all history"
           >
             <MdDelete className="text-lg" />
@@ -84,13 +84,13 @@ export function HistoryView() {
                 )}
 
                 <div className="relative flex items-center justify-between">
-                  <span className="min-w-[70px] truncate text-xs font-bold text-accent-primary">
+                  <span className="min-w-[ 70px ] truncate text-xs font-bold text-accent-primary">
                     {getRelativeTime(item.createdAt)}
                   </span>
 
                   <div className="mx-4 flex flex-1 items-center gap-4 overflow-hidden">
                     <div className="flex flex-1 flex-col overflow-hidden">
-                      <span className="mb-1 text-[11px] font-semibold text-danger">
+                      <span className="mb-1 text-[ 11px ] font-semibold text-danger">
                         {getLineCount(item.originalText)} lines
                       </span>
                       <div className="flex flex-col gap-0.5 rounded bg-bg-secondary px-3 py-2">
@@ -105,7 +105,7 @@ export function HistoryView() {
                     <MdArrowForward className="text-lg shrink-0 text-text-secondary" />
 
                     <div className="flex flex-1 flex-col overflow-hidden">
-                      <span className="mb-1 text-[11px] font-semibold text-success">
+                      <span className="mb-1 text-[ 11px ] font-semibold text-success">
                         {getLineCount(item.modifiedText)} lines
                       </span>
                       <div className="flex flex-col gap-0.5 rounded bg-bg-secondary px-3 py-2">
@@ -121,18 +121,18 @@ export function HistoryView() {
                   <div className="flex shrink-0 items-center gap-1">
                     <button
                       onClick={(e) => handleToggleBookmark(e, item.id, item.isBookmarked)}
-                      className="rounded p-2 text-text-secondary transition-colors hover:bg-hover-overlay hover:text-accent-primary"
+                      className="rounded p-2 text-accent-primary transition-colors hover:bg-hover-overlay"
                       title="Bookmark this item"
                     >
                       {item.isBookmarked ? (
-                        <MdBookmark className="text-2xl text-accent-primary" />
+                        <MdBookmark className="text-2xl" />
                       ) : (
                         <MdBookmarkBorder className="text-2xl" />
                       )}
                     </button>
                     <button
                       onClick={(e) => handleDeleteItem(e, item.id)}
-                      className="rounded p-2 text-text-secondary transition-colors hover:bg-hover-overlay hover:text-danger"
+                      className="rounded p-2 text-danger transition-colors hover:bg-hover-overlay"
                       title="Delete this item"
                     >
                       <MdDelete className="text-2xl" />

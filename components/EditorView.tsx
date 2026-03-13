@@ -26,7 +26,7 @@ export function EditorView() {
             <MdKeyboardArrowRight className="text-2xl text-text-secondary" />
           </button>
         ) : (
-          <div className="flex w-72 flex-col h-full">
+          <div className="flex w-64 flex-col h-full">
             <div className="flex items-center justify-between border-b border-border-default p-4">
               <div className="flex items-center gap-2">
                 <MdTune className="text-xl text-text-secondary" />
@@ -41,14 +41,14 @@ export function EditorView() {
               </button>
             </div>
             <div className="flex-1 overflow-y-auto">
-              <SettingsView />
+               <SettingsView />
             </div>
           </div>
         )}
       </div>
 
       <div className="flex flex-1 flex-col overflow-hidden">
-        <div 
+        <div
           className={clsx(
             "flex flex-col bg-bg-primary relative",
             (hasResult || !isInputExpanded) ? "flex-1 overflow-hidden" : "shrink-0"
@@ -67,10 +67,10 @@ export function EditorView() {
         </button>
 
         {isInputExpanded && (
-          <div 
+          <div
             className={clsx(
               "shrink-0 border-border-default flex flex-col",
-              hasResult ? "h-1/2 min-h-[300px] border-t" : "flex-1"
+              hasResult ? "h-1/2 min-h-[ 300px ] border-t" : "flex-1"
             )}
           >
             <InputView />
