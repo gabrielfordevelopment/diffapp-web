@@ -1,5 +1,6 @@
 import * as Diff from "diff";
-import { BlockType, ChangeBlock, ChangeLine, CompareSettings, ComparisonResult, DiffChangeType, PrecisionLevel, TextFragment } from "../types";
+import { BlockType, ChangeBlock, ChangeLine, ComparisonResult, DiffChangeType, TextFragment } from "../types/diff";
+import { CompareSettings, PrecisionLevel } from "../types/settings";
 
 interface Chunk {
   type: BlockType;
@@ -17,11 +18,11 @@ export class ComparisonService {
 
     for (let i = 0; i < lineDiffs.length; i++) {
       const diff = lineDiffs[ i ];
-      
+
       if (!diff.added && !diff.removed) {
         chunks.push({ type: BlockType.Unchanged, oldLines: diff.value, newLines: diff.value });
       } else {
-        let oldL = diff.removed ? diff.value : [ ];
+        let oldL = diff.removed ? diff.value :[ ];
         let newL = diff.added ? diff.value : [ ];
 
         while (i + 1 < lineDiffs.length && (lineDiffs[ i + 1 ].added || lineDiffs[ i + 1 ].removed)) {
@@ -35,11 +36,11 @@ export class ComparisonService {
         }
 
         let type = BlockType.Modified;
-        
+
         if (oldL.length > 0 && newL.length === 0) {
           type = BlockType.Removed;
         }
-        
+
         if (oldL.length === 0 && newL.length > 0) {
           type = BlockType.Added;
         }
@@ -54,7 +55,7 @@ export class ComparisonService {
 
     for (let i = 0; i < chunks.length; i++) {
       const chunk = chunks[ i ];
-      
+
       const block: ChangeBlock = {
         id: crypto.randomUUID(),
         kind: chunk.type,
@@ -121,7 +122,7 @@ export class ComparisonService {
             }
           }
         }
-        
+
         block.isWhitespaceChange = isWhitespaceOnlyBlock;
         currentOldIndex += chunk.oldLines.length;
         currentNewIndex += chunk.newLines.length;
@@ -159,7 +160,7 @@ export class ComparisonService {
 
   private static generateInlineDiff(oldStr: string, newStr: string, settings: CompareSettings, oldLineNum: number, newLineNum: number) {
     let inlineChanges: Array<Diff.Change>;
-    
+
     if (settings.precision === PrecisionLevel.Character) {
       inlineChanges = Diff.diffChars(oldStr, newStr);
     } else {
@@ -173,7 +174,7 @@ export class ComparisonService {
     for (let i = 0; i < inlineChanges.length; i++) {
       const change = inlineChanges[ i ];
       const isWhitespace = change.value.trim() === "";
-      
+
       if (!isWhitespace && (change.added || change.removed)) {
         isWhitespaceOnly = false;
       }

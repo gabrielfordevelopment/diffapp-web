@@ -1,4 +1,4 @@
-import { AppSettings, PrecisionLevel, ViewMode } from "../types";
+import { AppSettings, PrecisionLevel, ViewMode } from "../types/settings";
 
 const SETTINGS_KEY = "diffapp_settings";
 
@@ -25,7 +25,6 @@ export class SettingsService {
         return { ...defaultSettings, ...parsed };
       }
     } catch {
-      return defaultSettings;
     }
 
     return defaultSettings;

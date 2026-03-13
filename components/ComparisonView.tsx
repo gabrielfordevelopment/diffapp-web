@@ -6,7 +6,9 @@ import { useEditorStore } from "../store/useEditorStore";
 import { useSettingsStore } from "../store/useSettingsStore";
 import { getBlockColorClass, getFragmentColorClass, calculateStats } from "../utils/diffHelpers";
 import { DiffMinimap } from "./DiffMinimap";
-import { MergeDirection, ViewMode, BlockType, DiffChangeType, TextFragment } from "../types";
+import { ViewMode } from "../types/settings";
+import { MergeDirection } from "../types/ui";
+import { BlockType, DiffChangeType, TextFragment } from "../types/diff";
 import clsx from "clsx";
 
 interface UnifiedLineData {
@@ -48,7 +50,7 @@ export function ComparisonView() {
 
   const leftLineCount = useMemo(() => leftText ? leftText.split(/\r?\n/).length : 0, [leftText]);
 
-  const rightLineCount = useMemo(() => rightText ? rightText.split(/\r?\n/).length : 0, [rightText]);
+  const rightLineCount = useMemo(() => rightText ? rightText.split(/\r?\n/).length : 0,[rightText]);
 
   const handleCopy = (text: string, side: "left" | "right") => {
     if (!text) return;
@@ -211,7 +213,7 @@ export function ComparisonView() {
                           block.isSelected && isSelectable && "bg-bg-selected border-accent-primary"
                         )}
                       >
-                        {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
+                        {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" /> }
                         <div className="flex flex-col w-full relative z-0">
                           {Array.from({ length: maxLines }).map((_, idx) => {
                             const oldLine = block.oldLines[idx] || { lineNumber: null, kind: DiffChangeType.Imaginary, fragments: [ ] };
@@ -312,7 +314,7 @@ export function ComparisonView() {
                             block.isSelected && isSelectable && "bg-bg-selected border-accent-primary"
                           )}
                         >
-                          {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
+                          {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" /> }
                           <div className={clsx("flex w-full flex-col relative z-0", getBlockColorClass(block.kind, "old", block.isWhitespaceChange, settings.ignoreWhitespace))}>
                             {block.oldLines.map((line, idx) => (
                               <div key={idx} className={clsx("flex min-h-[24px] w-full", line.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg")}>
@@ -378,13 +380,13 @@ export function ComparisonView() {
                             block.isSelected && isSelectable && "bg-bg-selected border-accent-primary"
                           )}
                         >
-                          {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
+                          {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" /> }
                           <div className={clsx("flex w-full flex-col relative z-0", getBlockColorClass(block.kind, "new", block.isWhitespaceChange, settings.ignoreWhitespace))}>
                             {block.newLines.map((line, idx) => (
                               <div key={idx} className={clsx("flex min-h-[24px] w-full", line.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg")}>
                                 <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-0 z-10">
                                   {line.lineNumber}
-                                </div>
+                                 </div>
                                 <div className={clsx("px-2 py-0.5 font-mono", wordWrapClass)}>
                                   {line.fragments.map((frag, fIdx) => (
                                     <span key={fIdx} className={getFragmentColorClass(frag.kind, frag.isWhitespaceChange, settings.ignoreWhitespace)}>
@@ -435,7 +437,7 @@ export function ComparisonView() {
                         block.isSelected && isSelectable && "bg-bg-selected border-accent-primary"
                       )}
                     >
-                      {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
+                      {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" /> }
                       <div className="flex w-full flex-col relative z-0">
                         {(() => {
                           if (block.kind === BlockType.Modified) {

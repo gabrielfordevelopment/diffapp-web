@@ -1,6 +1,6 @@
 "use client";
 
-import { PrecisionLevel, ViewMode } from "../types";
+import { PrecisionLevel, ViewMode } from "../types/settings";
 import { useSettingsStore } from "../store/useSettingsStore";
 import { useEditorStore } from "../store/useEditorStore";
 import { originalTestText, modifiedTestText } from "../utils/testData";

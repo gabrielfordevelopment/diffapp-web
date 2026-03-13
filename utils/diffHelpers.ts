@@ -1,4 +1,4 @@
-import { BlockType, ChangeBlock, DiffChangeType } from "../types";
+import { BlockType, ChangeBlock, DiffChangeType } from "../types/diff";
 
 export function getBlockColorClass(kind: BlockType, side: "old" | "new", isWhitespaceChange: boolean, ignoreWhitespace: boolean): string {
   if (ignoreWhitespace && isWhitespaceChange) {

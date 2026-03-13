@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { DiffHistoryItem } from "../types";
+import { DiffHistoryItem } from "../types/history";
 import { HistoryService } from "../services/historyService";
 
 interface HistoryState {

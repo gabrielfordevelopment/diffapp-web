@@ -1,5 +1,7 @@
 import { create } from "zustand";
-import { ComparisonResult, MergeDirection, ChangeBlock, CompareSettings } from "../types";
+import { ComparisonResult, ChangeBlock } from "../types/diff";
+import { CompareSettings } from "../types/settings";
+import { MergeDirection } from "../types/ui";
 import { ComparisonService } from "../services/comparisonService";
 import { MergeService } from "../services/mergeService";
 import { HistoryService } from "../services/historyService";

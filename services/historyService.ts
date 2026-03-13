@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { DiffHistoryItem } from "../types";
+import { DiffHistoryItem } from "../types/history";
 
 export class HistoryService {
   public static async addAsync(original: string, modified: string): Promise<void> {
@@ -25,7 +25,7 @@ export class HistoryService {
 
   public static async getAllAsync(): Promise<Array<DiffHistoryItem>> {
     const items = await db.history.toArray();
-    
+
     return items.sort((a, b) => {
       if (a.isBookmarked === b.isBookmarked) {
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
