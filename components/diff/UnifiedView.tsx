@@ -166,12 +166,9 @@ export function UnifiedView() {
 
   const getRowContainerClass = (row: RowData) => {
     return clsx(
-      "flex flex-col border-y-2 border-transparent w-full relative",
+      "flex flex-col w-full relative",
       row.isSelectable && "cursor-pointer",
-      row.block.isSelected && row.isSelectable && "bg-bg-selected",
-      row.isFirst && "border-t-2",
-      row.isLast && "border-b-2",
-      (row.isFirst || row.isLast) && row.block.isSelected && row.isSelectable ? "border-accent-primary" : "border-transparent"
+      row.block.isSelected && row.isSelectable && "bg-bg-selected"
     );
   };
 
@@ -214,6 +211,7 @@ export function UnifiedView() {
                       <span>Merge</span>
                     </button>
                   </div>
+                  <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent-primary z-20 pointer-events-none" />
                 </div>
               </div>
             );
@@ -234,6 +232,7 @@ export function UnifiedView() {
             >
               <div className={getRowContainerClass(row)}>
                 {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
+                {row.isFirst && row.block.isSelected && row.isSelectable && <div className="absolute top-0 left-0 w-full h-[2px] bg-accent-primary z-20 pointer-events-none" />}
                 <div className="flex w-full flex-col relative z-0">
                   <div className={clsx("flex min-h-[24px] w-full", l.bgClass)}>
                     <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary py-0.5 sticky left-0 z-10">

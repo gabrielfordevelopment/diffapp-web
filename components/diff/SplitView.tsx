@@ -146,12 +146,9 @@ export function SplitView() {
 
   const getRowContainerClass = (row: RowData) => {
     return clsx(
-      "flex flex-col border-y-2 border-transparent w-full relative",
+      "flex flex-col w-full relative",
       row.isSelectable && "cursor-pointer",
-      row.block.isSelected && row.isSelectable && "bg-bg-selected",
-      row.isFirst && "border-t-2",
-      row.isLast && "border-b-2",
-      (row.isFirst || row.isLast) && row.block.isSelected && row.isSelectable ? "border-accent-primary" : "border-transparent"
+      row.block.isSelected && row.isSelectable && "bg-bg-selected"
     );
   };
 
@@ -197,6 +194,7 @@ export function SplitView() {
                         <span>Merge</span>
                       </button>
                     </div>
+                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent-primary z-20 pointer-events-none" />
                   </div>
                 </div>
               );
@@ -218,6 +216,7 @@ export function SplitView() {
               >
                 <div className={getRowContainerClass(row)}>
                   {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
+                  {row.isFirst && row.block.isSelected && row.isSelectable && <div className="absolute top-0 left-0 w-full h-[2px] bg-accent-primary z-20 pointer-events-none" />}
                   <div className="flex min-h-[24px] w-full relative z-0">
                     <div
                       onMouseDown={() => setSelectionSide("left")}
@@ -297,6 +296,7 @@ export function SplitView() {
                         <MdClose className="text-xl" />
                       </button>
                     </div>
+                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent-primary z-20 pointer-events-none" />
                   </div>
                 </div>
               );
@@ -317,6 +317,7 @@ export function SplitView() {
               >
                 <div className={getRowContainerClass(row)}>
                   {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
+                  {row.isFirst && row.block.isSelected && row.isSelectable && <div className="absolute top-0 left-0 w-full h-[2px] bg-accent-primary z-20 pointer-events-none" />}
                   <div className={clsx("flex w-full flex-col relative z-0", getBlockColorClass(row.block.kind, "old", row.block.isWhitespaceChange, settings.ignoreWhitespace))}>
                     <div className={clsx("flex min-h-[24px] w-full", oldLine.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg")}>
                       <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-0 z-10">
@@ -368,6 +369,7 @@ export function SplitView() {
                         <span>Merge</span>
                       </button>
                     </div>
+                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent-primary z-20 pointer-events-none" />
                   </div>
                 </div>
               );
@@ -388,6 +390,7 @@ export function SplitView() {
               >
                 <div className={getRowContainerClass(row)}>
                   {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
+                  {row.isFirst && row.block.isSelected && row.isSelectable && <div className="absolute top-0 left-0 w-full h-[2px] bg-accent-primary z-20 pointer-events-none" />}
                   <div className={clsx("flex w-full flex-col relative z-0", getBlockColorClass(row.block.kind, "new", row.block.isWhitespaceChange, settings.ignoreWhitespace))}>
                     <div className={clsx("flex min-h-[24px] w-full", newLine.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg")}>
                       <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-0 z-10">
