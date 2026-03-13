@@ -14,7 +14,7 @@ interface EditorState {
   setRightText: (text: string) => void;
   swapTexts: (settings: CompareSettings) => void;
   clearContent: () => void;
-  compare: (settings: CompareSettings, saveToHistory: boolean) => Promise<void>;
+  compare: (settings: CompareSettings, saveToHistory: boolean, preserveInputState?: boolean) => Promise<void>;
   selectBlock: (blockId: string | null) => void;
   mergeBlock: (block: ChangeBlock, direction: MergeDirection, settings: CompareSettings) => void;
   toggleInputPanel: () => void;
@@ -29,15 +29,15 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   isComparing: false,
 
   setLeftText: (text: string) => set({ leftText: text }),
-  
+
   setRightText: (text: string) => set({ rightText: text }),
 
   swapTexts: (settings: CompareSettings) => {
     const { leftText, rightText, comparisonResult } = get();
     set({ leftText: rightText, rightText: leftText });
-    
+
     if (comparisonResult) {
-      get().compare(settings, true);
+      get().compare(settings, true, true);
     }
   },
 
@@ -54,16 +54,16 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     set((state) => ({ isInputExpanded: !state.isInputExpanded }));
   },
 
-  compare: async (settings: CompareSettings, saveToHistory: boolean) => {
-    const { leftText, rightText } = get();
-    
+  compare: async (settings: CompareSettings, saveToHistory: boolean, preserveInputState: boolean = false) => {
+    const { leftText, rightText, isInputExpanded } = get();
+
     set({ isComparing: true });
 
     const result = ComparisonService.compare(leftText, rightText, settings);
 
     set({
       comparisonResult: result,
-      isInputExpanded: false,
+      isInputExpanded: preserveInputState ? isInputExpanded : false,
       isComparing: false
     });
 
@@ -74,7 +74,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
   selectBlock: (blockId: string | null) => {
     const currentResult = get().comparisonResult;
-    
     if (!currentResult) {
       return;
     }
@@ -91,7 +90,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
   mergeBlock: (block: ChangeBlock, direction: MergeDirection, settings: CompareSettings) => {
     const { leftText, rightText } = get();
-    
     let newLeft = leftText;
     let newRight = rightText;
 
@@ -102,8 +100,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     }
 
     set({ leftText: newLeft, rightText: newRight });
-    
-    get().compare(settings, false);
+
+    get().compare(settings, false, true);
   },
 
   loadFromHistory: async (left: string, right: string, settings: CompareSettings) => {

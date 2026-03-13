@@ -1,76 +1,86 @@
 "use client";
 
-import { MdKeyboardArrowRight, MdKeyboardArrowLeft, MdTune, MdBorderColor, MdExpandMore, MdExpandLess } from "react-icons/md";
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight, MdKeyboardArrowUp, MdTune } from "react-icons/md";
 import { useEditorStore } from "../store/useEditorStore";
 import { useSettingsStore } from "../store/useSettingsStore";
-import { SettingsView } from "./SettingsView";
+import { OptionsView } from "./OptionsView";
 import { InputView } from "./InputView";
 import { ComparisonView } from "./ComparisonView";
+import clsx from "clsx";
 
 export function EditorView() {
   const { isInputExpanded, toggleInputPanel, comparisonResult } = useEditorStore();
   const { settings, updateSettings } = useSettingsStore();
 
+  const hasResult = comparisonResult && comparisonResult.blocks.length > 0;
+
   return (
-    <div className="flex h-full w-full overflow-hidden bg-white">
-      <div className="flex shrink-0 border-r border-gray-300 bg-[#f6f8fa] transition-all duration-300">
-        {!settings.isSettingsPanelOpen ? (
-          <button
-            onClick={() => updateSettings({ isSettingsPanelOpen: true })}
-            className="flex h-full w-8 items-center justify-center hover:bg-gray-200 transition-colors"
-            title="Open Settings"
-          >
-            <MdKeyboardArrowRight className="text-2xl text-gray-500" />
-          </button>
-        ) : (
-          <div className="flex w-72 flex-col h-full">
-            <div className="flex items-center justify-between border-b border-gray-300 p-4">
-              <div className="flex items-center gap-2">
-                <MdTune className="text-xl text-gray-600" />
-                <h2 className="text-base font-bold text-gray-900">Settings</h2>
-              </div>
-              <button
-                onClick={() => updateSettings({ isSettingsPanelOpen: false })}
-                className="rounded p-1 hover:bg-gray-200 transition-colors"
-                title="Close Settings"
-              >
-                <MdKeyboardArrowLeft className="text-2xl text-gray-500" />
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto">
-              <SettingsView />
-            </div>
-          </div>
+    <div className="flex h-full w-full overflow-hidden bg-bg-primary relative">
+      <div
+        className={clsx(
+          "flex flex-col bg-bg-secondary transition-all duration-300 overflow-hidden h-full shrink-0 z-10",
+          settings.isOptionsPanelOpen ? "w-64 border-r border-border-default" : "w-0 border-r-0"
         )}
+      >
+        <div className="flex w-64 flex-col h-full shrink-0">
+          <div className="flex items-center justify-between border-b border-border-default p-4 shrink-0 bg-bg-secondary">
+            <div className="flex items-center gap-2">
+              <MdTune className="text-xl text-text-secondary" />
+              <h2 className="text-base font-bold text-text-primary">Options</h2>
+            </div>
+            <button
+              onClick={() => updateSettings({ isOptionsPanelOpen: false })}
+              className="flex items-center justify-center rounded p-1 text-text-secondary hover:bg-hover-overlay hover:text-text-primary transition-colors"
+              title="Close Options"
+            >
+              <MdKeyboardArrowLeft className="text-2xl" />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
+            <OptionsView />
+          </div>
+        </div>
       </div>
 
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <div className="flex-1 overflow-hidden bg-white relative">
-          {comparisonResult ? (
-            <ComparisonView />
-          ) : (
-            !isInputExpanded && (
-              <div className="flex h-full w-full items-center justify-center">
-                <p className="text-gray-400">No comparison generated yet.</p>
-              </div>
-            )
+      <div className="flex flex-1 flex-col overflow-hidden relative z-0">
+        {!settings.isOptionsPanelOpen && (
+          <button
+            onClick={() => updateSettings({ isOptionsPanelOpen: true })}
+            className="absolute left-0 top-6 z-30 flex h-12 w-6 items-center justify-center rounded-r-md bg-accent-primary text-white shadow-md hover:bg-accent-hover transition-colors"
+            title="Open Options"
+          >
+            <MdKeyboardArrowRight className="text-2xl" />
+          </button>
+        )}
+
+        <div
+          className={clsx(
+            "flex flex-col bg-bg-primary relative",
+            hasResult || !isInputExpanded ? "flex-1 overflow-hidden" : "shrink-0 h-0"
           )}
+        >
+          <ComparisonView />
         </div>
 
-        <button
-          onClick={toggleInputPanel}
-          className="flex w-full items-center justify-center gap-2 bg-blue-600 py-1.5 text-white hover:bg-blue-700 transition-colors shrink-0"
-        >
-          <MdBorderColor className="text-lg" />
-          <span className="text-sm font-semibold">Input / Editor</span>
-          {!isInputExpanded ? <MdExpandLess className="text-xl" /> : <MdExpandMore className="text-xl" />}
-        </button>
-
-        {isInputExpanded && (
-          <div className="h-1/2 min-h-[300px] shrink-0 border-t border-gray-300">
-            <InputView />
-          </div>
+        {!isInputExpanded && (
+          <button
+            onClick={toggleInputPanel}
+            className="absolute bottom-0 left-1/2 -translate-x-1/2 z-30 flex h-8 pl-3 pr-5 items-center justify-center gap-1 rounded-t-md bg-accent-primary text-white shadow-md hover:bg-accent-hover transition-colors text-sm font-semibold"
+            title="Show Input"
+          >
+            <MdKeyboardArrowUp className="text-xl" />
+            <span>Input Editor</span>
+          </button>
         )}
+
+        <div
+          className={clsx(
+            "flex flex-col shrink-0 transition-all duration-300 ease-in-out overflow-hidden bg-bg-primary z-10",
+            isInputExpanded ? (hasResult ? "h-[450px] border-t border-border-default shadow-sm" : "flex-1") : "h-0 opacity-0"
+          )}
+        >
+          <InputView />
+        </div>
       </div>
     </div>
   );

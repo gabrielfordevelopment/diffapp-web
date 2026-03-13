@@ -96,7 +96,8 @@ export interface AppSettings {
   precision: PrecisionLevel;
   viewMode: ViewMode;
   fontSize: number;
-  isSettingsPanelOpen: boolean;
+  isOptionsPanelOpen: boolean;
+  theme: string;
 }
 
 export interface DiffHistoryItem {
