@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useEditorStore } from "../../store/useEditorStore";
-import { useSettingsStore } from "../../store/useSettingsStore";
-import { ViewMode } from "../../types/settings";
+import { useEditorStore } from "@/store/useEditorStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
+import { ViewMode } from "@/types/settings";
 import { ComparisonToolbar } from "./ComparisonToolbar";
 import { SplitView } from "./SplitView";
 import { UnifiedView } from "./UnifiedView";
@@ -30,17 +30,16 @@ export function ComparisonView() {
     storeRefs.current.selectBlock(null);
   }, [settings.ignoreWhitespace]);
 
-  const handleSegmentClick = (blockId: string) => {
+  const handleSegmentClick = (blockId: string, offsetPct: number) => {
     selectBlock(blockId);
-    let prefix = "block-unified-";
-
-    if (settings.viewMode === ViewMode.Split) {
-      prefix = settings.isWordWrapEnabled ? "block-split-wrap-" : "block-split-left-";
-    }
-
-    const element = document.getElementById(`${prefix}${blockId}`);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+    
+    const container = document.getElementById("diff-container");
+    if (container) {
+      const scrollArea = container.querySelector(".custom-scrollbar");
+      if (scrollArea) {
+        const targetScroll = (offsetPct / 100) * scrollArea.scrollHeight - scrollArea.clientHeight / 2;
+        scrollArea.scrollTo({ top: targetScroll, behavior: "smooth" });
+      }
     }
   };
 
@@ -52,7 +51,7 @@ export function ComparisonView() {
       <ComparisonToolbar />
 
       {!hideBody && (
-        <div className="flex flex-1 overflow-hidden relative" style={{ fontSize: `${settings.fontSize}px` }}>
+        <div id="diff-container" className="flex flex-1 overflow-hidden relative" style={{ fontSize: `${settings.fontSize}px` }}>
           {!hasResult ? (
             <div className="flex h-full w-full items-center justify-center">
               <p className="text-text-secondary">No comparison generated yet.</p>

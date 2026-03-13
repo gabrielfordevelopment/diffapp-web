@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
-import { BlockType, ChangeBlock } from "../../types/diff";
+import { BlockType, ChangeBlock } from "@/types/diff";
 import clsx from "clsx";
 
 interface DiffMinimapProps {
   blocks: Array<ChangeBlock>;
   ignoreWhitespace: boolean;
-  onSegmentClick: (blockId: string) => void;
+  onSegmentClick: (blockId: string, offsetPct: number) => void;
 }
 
 export function DiffMinimap({ blocks, ignoreWhitespace, onSegmentClick }: DiffMinimapProps) {
@@ -71,7 +71,7 @@ export function DiffMinimap({ blocks, ignoreWhitespace, onSegmentClick }: DiffMi
           key={seg.id}
           onClick={(e) => {
             e.stopPropagation();
-            onSegmentClick(seg.id);
+            onSegmentClick(seg.id, seg.offsetPct);
           }}
           className="absolute w-full flex opacity-80 hover:opacity-100 transition-opacity cursor-pointer z-40"
           style={{ top: `${seg.offsetPct}%`, height: `${seg.heightPct}%` }}
