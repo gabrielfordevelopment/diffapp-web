@@ -1,7 +1,7 @@
 "use client";
 
 import { MdDifference } from "react-icons/md";
-import { useAppStore } from "../store/useAppStore";
+import { useAppStore } from "@/store/useAppStore";
 import clsx from "clsx";
 
 export function Header() {

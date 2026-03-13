@@ -9,7 +9,7 @@
   --color-border-default: var(--border-default);
   --color-accent-primary: var(--accent-primary);
   --color-accent-hover: var(--accent-hover);
-  
+
   --color-danger: var(--danger);
   --color-danger-hover: var(--danger-hover);
   --color-danger-bg: var(--danger-bg);
@@ -24,9 +24,10 @@
   --color-hover-overlay: var(--hover-overlay);
   --color-minimap-added: var(--minimap-added);
   --color-minimap-removed: var(--minimap-removed);
+  --color-minimap-empty: var(--minimap-empty);
 }
 
-:root, [ data-theme="light" ] {
+:root, [data-theme="light"] {
   --bg-primary: #ffffff;
   --bg-secondary: #f6f8fa;
   --bg-selected: #f0f8ff;
@@ -35,7 +36,7 @@
   --border-default: #d1d5db;
   --accent-primary: #2563eb;
   --accent-hover: #1d4ed8;
-  
+
   --danger: #dc2626;
   --danger-hover: #b91c1c;
   --danger-bg: #fef2f2;
@@ -50,9 +51,10 @@
   --hover-overlay: rgba(0, 0, 0, 0.05);
   --minimap-added: #8fe3c7;
   --minimap-removed: #f5a4a4;
+  --minimap-empty: #e5e7eb;
 }
 
-[ data-theme="dark" ] {
+[data-theme="dark"] {
   --bg-primary: #0d1117;
   --bg-secondary: #161b22;
   --bg-selected: #1f2937;
@@ -76,6 +78,7 @@
   --hover-overlay: rgba(255, 255, 255, 0.05);
   --minimap-added: #2ea043;
   --minimap-removed: #f85149;
+  --minimap-empty: #374151;
 }
 
 body {

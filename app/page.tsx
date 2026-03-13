@@ -1,10 +1,10 @@
 "use client";
 
-import { Header } from "../components/Header";
-import { EditorView } from "../components/EditorView";
-import { HistoryView } from "../components/HistoryView";
-import { MainSettingsView } from "../components/MainSettingsView";
-import { useAppStore } from "../store/useAppStore";
+import { Header } from "@/components/layout/Header";
+import { EditorView } from "@/components/editor/EditorView";
+import { HistoryView } from "@/components/history/HistoryView";
+import { MainSettingsView } from "@/components/settings/MainSettingsView";
+import { useAppStore } from "@/store/useAppStore";
 
 export default function Home() {
   const currentView = useAppStore((state) => state.currentView);

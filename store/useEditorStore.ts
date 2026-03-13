@@ -1,8 +1,10 @@
 import { create } from "zustand";
-import { ComparisonResult, MergeDirection, ChangeBlock, CompareSettings } from "../types";
-import { ComparisonService } from "../services/comparisonService";
-import { MergeService } from "../services/mergeService";
-import { HistoryService } from "../services/historyService";
+import { ComparisonResult, ChangeBlock } from "@/types/diff";
+import { CompareSettings } from "@/types/settings";
+import { MergeDirection } from "@/types/ui";
+import { ComparisonService } from "@/services/comparisonService";
+import { MergeService } from "@/services/mergeService";
+import { HistoryService } from "@/services/historyService";
 
 interface EditorState {
   leftText: string;
@@ -58,7 +60,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     const { leftText, rightText, isInputExpanded } = get();
 
     set({ isComparing: true });
-
     const result = ComparisonService.compare(leftText, rightText, settings);
 
     set({
@@ -82,7 +83,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       ...b,
       isSelected: b.id === blockId
     }));
-
     set({
       comparisonResult: { blocks: updatedBlocks }
     });

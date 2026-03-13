@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { DiffHistoryItem } from "../types";
-import { HistoryService } from "../services/historyService";
+import { DiffHistoryItem } from "@/types/history";
+import { HistoryService } from "@/services/historyService";
 
 interface HistoryState {
   items: Array<DiffHistoryItem>;

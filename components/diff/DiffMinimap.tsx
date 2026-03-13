@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
-import { BlockType, ChangeBlock } from "../types";
+import { BlockType, ChangeBlock } from "@/types/diff";
 import clsx from "clsx";
 
 interface DiffMinimapProps {
   blocks: Array<ChangeBlock>;
   ignoreWhitespace: boolean;
-  onSegmentClick: (blockId: string) => void;
+  onSegmentClick: (blockId: string, offsetPct: number) => void;
 }
 
 export function DiffMinimap({ blocks, ignoreWhitespace, onSegmentClick }: DiffMinimapProps) {
@@ -15,7 +15,7 @@ export function DiffMinimap({ blocks, ignoreWhitespace, onSegmentClick }: DiffMi
     let totalHeight = 0;
 
     for (let i = 0; i < blocks.length; i++) {
-      totalHeight += Math.max(blocks[ i ].oldLines.length, blocks[ i ].newLines.length);
+      totalHeight += Math.max(blocks[i].oldLines.length, blocks[i].newLines.length);
     }
 
     if (totalHeight === 0) {
@@ -26,7 +26,7 @@ export function DiffMinimap({ blocks, ignoreWhitespace, onSegmentClick }: DiffMi
     const result = [ ];
 
     for (let i = 0; i < blocks.length; i++) {
-      const block = blocks[ i ];
+      const block = blocks[i];
       const height = Math.max(block.oldLines.length, block.newLines.length);
 
       if (block.kind !== BlockType.Unchanged) {
@@ -50,15 +50,17 @@ export function DiffMinimap({ blocks, ignoreWhitespace, onSegmentClick }: DiffMi
     }
 
     return result;
-  }, [ blocks, ignoreWhitespace ]);
+  }, [blocks, ignoreWhitespace]);
 
   const getLeftColor = (kind: BlockType) => {
     if (kind === BlockType.Removed || kind === BlockType.Modified) return "bg-minimap-removed";
+    if (kind === BlockType.Added) return "bg-minimap-empty";
     return "bg-transparent";
   };
 
   const getRightColor = (kind: BlockType) => {
     if (kind === BlockType.Added || kind === BlockType.Modified) return "bg-minimap-added";
+    if (kind === BlockType.Removed) return "bg-minimap-empty";
     return "bg-transparent";
   };
 
@@ -69,7 +71,7 @@ export function DiffMinimap({ blocks, ignoreWhitespace, onSegmentClick }: DiffMi
           key={seg.id}
           onClick={(e) => {
             e.stopPropagation();
-            onSegmentClick(seg.id);
+            onSegmentClick(seg.id, seg.offsetPct);
           }}
           className="absolute w-full flex opacity-80 hover:opacity-100 transition-opacity cursor-pointer z-40"
           style={{ top: `${seg.offsetPct}%`, height: `${seg.heightPct}%` }}

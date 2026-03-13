@@ -1,4 +1,4 @@
-import { BlockType, ChangeBlock, DiffChangeType } from "../types";
+import { BlockType, ChangeBlock, DiffChangeType } from "@/types/diff";
 
 export function getBlockColorClass(kind: BlockType, side: "old" | "new", isWhitespaceChange: boolean, ignoreWhitespace: boolean): string {
   if (ignoreWhitespace && isWhitespaceChange) {
@@ -45,7 +45,7 @@ export function calculateStats(blocks: Array<ChangeBlock> | undefined, ignoreWhi
   }
 
   for (let i = 0; i < blocks.length; i++) {
-    const block = blocks[ i ];
+    const block = blocks[i];
 
     if (ignoreWhitespace && block.isWhitespaceChange) {
       continue;
