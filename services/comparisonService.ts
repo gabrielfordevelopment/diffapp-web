@@ -1,6 +1,6 @@
 import * as Diff from "diff";
-import { BlockType, ChangeBlock, ChangeLine, ComparisonResult, DiffChangeType, TextFragment } from "../types/diff";
-import { CompareSettings, PrecisionLevel } from "../types/settings";
+import { BlockType, ChangeBlock, ChangeLine, ComparisonResult, DiffChangeType, TextFragment } from "@/types/diff";
+import { CompareSettings, PrecisionLevel } from "@/types/settings";
 
 interface Chunk {
   type: BlockType;
@@ -17,26 +17,25 @@ export class ComparisonService {
     const chunks: Array<Chunk> = [ ];
 
     for (let i = 0; i < lineDiffs.length; i++) {
-      const diff = lineDiffs[ i ];
+      const diff = lineDiffs[i];
 
       if (!diff.added && !diff.removed) {
         chunks.push({ type: BlockType.Unchanged, oldLines: diff.value, newLines: diff.value });
       } else {
-        let oldL = diff.removed ? diff.value :[ ];
+        let oldL = diff.removed ? diff.value : [ ];
         let newL = diff.added ? diff.value : [ ];
 
-        while (i + 1 < lineDiffs.length && (lineDiffs[ i + 1 ].added || lineDiffs[ i + 1 ].removed)) {
+        while (i + 1 < lineDiffs.length && (lineDiffs[i + 1].added || lineDiffs[i + 1].removed)) {
           i++;
-          if (lineDiffs[ i ].removed) {
-            oldL = oldL.concat(lineDiffs[ i ].value);
+          if (lineDiffs[i].removed) {
+            oldL = oldL.concat(lineDiffs[i].value);
           }
-          if (lineDiffs[ i ].added) {
-            newL = newL.concat(lineDiffs[ i ].value);
+          if (lineDiffs[i].added) {
+            newL = newL.concat(lineDiffs[i].value);
           }
         }
 
         let type = BlockType.Modified;
-
         if (oldL.length > 0 && newL.length === 0) {
           type = BlockType.Removed;
         }
@@ -54,8 +53,7 @@ export class ComparisonService {
     let currentNewIndex = 0;
 
     for (let i = 0; i < chunks.length; i++) {
-      const chunk = chunks[ i ];
-
+      const chunk = chunks[i];
       const block: ChangeBlock = {
         id: crypto.randomUUID(),
         kind: chunk.type,
@@ -68,28 +66,28 @@ export class ComparisonService {
 
       if (chunk.type === BlockType.Unchanged) {
         for (let j = 0; j < chunk.oldLines.length; j++) {
-          block.oldLines.push(this.createLine(chunk.oldLines[ j ], DiffChangeType.Unchanged, currentOldIndex + j + 1));
-          block.newLines.push(this.createLine(chunk.newLines[ j ], DiffChangeType.Unchanged, currentNewIndex + j + 1));
+          block.oldLines.push(this.createLine(chunk.oldLines[j], DiffChangeType.Unchanged, currentOldIndex + j + 1));
+          block.newLines.push(this.createLine(chunk.newLines[j], DiffChangeType.Unchanged, currentNewIndex + j + 1));
         }
         currentOldIndex += chunk.oldLines.length;
         currentNewIndex += chunk.newLines.length;
       } else if (chunk.type === BlockType.Added) {
         let isWs = true;
         for (let j = 0; j < chunk.newLines.length; j++) {
-          if (chunk.newLines[ j ].trim() !== "") {
+          if (chunk.newLines[j].trim() !== "") {
             isWs = false;
           }
-          block.newLines.push(this.createLine(chunk.newLines[ j ], DiffChangeType.Inserted, currentNewIndex + j + 1));
+          block.newLines.push(this.createLine(chunk.newLines[j], DiffChangeType.Inserted, currentNewIndex + j + 1));
         }
         block.isWhitespaceChange = isWs;
         currentNewIndex += chunk.newLines.length;
       } else if (chunk.type === BlockType.Removed) {
         let isWs = true;
         for (let j = 0; j < chunk.oldLines.length; j++) {
-          if (chunk.oldLines[ j ].trim() !== "") {
+          if (chunk.oldLines[j].trim() !== "") {
             isWs = false;
           }
-          block.oldLines.push(this.createLine(chunk.oldLines[ j ], DiffChangeType.Deleted, currentOldIndex + j + 1));
+          block.oldLines.push(this.createLine(chunk.oldLines[j], DiffChangeType.Deleted, currentOldIndex + j + 1));
         }
         block.isWhitespaceChange = isWs;
         currentOldIndex += chunk.oldLines.length;
@@ -98,8 +96,8 @@ export class ComparisonService {
         let isWhitespaceOnlyBlock = true;
 
         for (let j = 0; j < maxLen; j++) {
-          const oldStr = j < chunk.oldLines.length ? chunk.oldLines[ j ] : null;
-          const newStr = j < chunk.newLines.length ? chunk.newLines[ j ] : null;
+          const oldStr = j < chunk.oldLines.length ? chunk.oldLines[j] : null;
+          const newStr = j < chunk.newLines.length ? chunk.newLines[j] : null;
 
           if (oldStr !== null && newStr !== null) {
             const diffResult = this.generateInlineDiff(oldStr, newStr, settings, currentOldIndex + j + 1, currentNewIndex + j + 1);
@@ -139,7 +137,7 @@ export class ComparisonService {
       lineNumber,
       kind,
       isInModifiedBlock: kind === DiffChangeType.Modified,
-      fragments:[
+      fragments: [
         {
           text,
           kind,
@@ -160,7 +158,6 @@ export class ComparisonService {
 
   private static generateInlineDiff(oldStr: string, newStr: string, settings: CompareSettings, oldLineNum: number, newLineNum: number) {
     let inlineChanges: Array<Diff.Change>;
-
     if (settings.precision === PrecisionLevel.Character) {
       inlineChanges = Diff.diffChars(oldStr, newStr);
     } else {
@@ -172,7 +169,7 @@ export class ComparisonService {
     let isWhitespaceOnly = true;
 
     for (let i = 0; i < inlineChanges.length; i++) {
-      const change = inlineChanges[ i ];
+      const change = inlineChanges[i];
       const isWhitespace = change.value.trim() === "";
 
       if (!isWhitespace && (change.added || change.removed)) {

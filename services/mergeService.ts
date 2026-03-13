@@ -1,5 +1,5 @@
-import { BlockType, ChangeBlock, ChangeLine, DiffChangeType } from "../types/diff";
-import { MergeDirection } from "../types/ui";
+import { BlockType, ChangeBlock, ChangeLine, DiffChangeType } from "@/types/diff";
+import { MergeDirection } from "@/types/ui";
 
 export class MergeService {
   public static mergeBlock(targetText: string, block: ChangeBlock, direction: MergeDirection): string {
@@ -49,8 +49,7 @@ export class MergeService {
       .sort((a, b) => b - a);
 
     for (let i = 0; i < indices.length; i++) {
-      const index = indices[ i ];
-
+      const index = indices[i];
       if (index >= 0 && index < textLines.length) {
         textLines.splice(index, 1);
       }
@@ -73,7 +72,6 @@ export class MergeService {
 
   private static replaceLines(textLines: Array<string>, targets: Array<ChangeLine>, newContent: Array<string>): void {
     const firstRealLine = targets.find(l => l.lineNumber !== null);
-
     if (!firstRealLine || firstRealLine.lineNumber === null) {
       return;
     }
@@ -83,7 +81,6 @@ export class MergeService {
 
     if (startIndex >= 0 && startIndex < textLines.length) {
       const actualRemovable = Math.min(countToRemove, textLines.length - startIndex);
-
       if (actualRemovable > 0) {
         textLines.splice(startIndex, actualRemovable, ...newContent);
       } else {

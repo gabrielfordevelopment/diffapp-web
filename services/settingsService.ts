@@ -1,4 +1,4 @@
-import { AppSettings, PrecisionLevel, ViewMode } from "../types/settings";
+import { AppSettings, PrecisionLevel, ViewMode } from "@/types/settings";
 
 const SETTINGS_KEY = "diffapp_settings";
 

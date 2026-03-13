@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { AppSettings, PrecisionLevel, ViewMode } from "../types/settings";
-import { SettingsService } from "../services/settingsService";
+import { AppSettings, PrecisionLevel, ViewMode } from "@/types/settings";
+import { SettingsService } from "@/services/settingsService";
 
 interface SettingsState {
   settings: AppSettings;

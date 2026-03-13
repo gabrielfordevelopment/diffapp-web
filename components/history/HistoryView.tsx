@@ -2,11 +2,11 @@
 
 import { useEffect } from "react";
 import { MdHistory, MdDelete, MdHistoryToggleOff, MdArrowForward, MdBookmark, MdBookmarkBorder } from "react-icons/md";
-import { useHistoryStore } from "../../store/useHistoryStore";
-import { useEditorStore } from "../../store/useEditorStore";
-import { useAppStore } from "../../store/useAppStore";
-import { useSettingsStore } from "../../store/useSettingsStore";
-import { getLineCount, generatePreviewLines, getRelativeTime } from "../../utils/formatters";
+import { useHistoryStore } from "@/store/useHistoryStore";
+import { useEditorStore } from "@/store/useEditorStore";
+import { useAppStore } from "@/store/useAppStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
+import { getLineCount, generatePreviewLines, getRelativeTime } from "@/utils/formatters";
 import clsx from "clsx";
 
 export function HistoryView() {
@@ -17,7 +17,7 @@ export function HistoryView() {
 
   useEffect(() => {
     loadHistory();
-  }, [ loadHistory ]);
+  }, [loadHistory]);
 
   const handleRestore = async (original: string, modified: string) => {
     await loadFromHistory(original, modified, settings);
@@ -75,12 +75,12 @@ export function HistoryView() {
               const modLines = generatePreviewLines(item.modifiedText);
               const maxDisplayLines = Math.max(origLines.length, modLines.length);
 
-              const displayOrigLines = [ ...origLines ];
+              const displayOrigLines = [...origLines];
               while (displayOrigLines.length < maxDisplayLines) {
                 displayOrigLines.push("");
               }
 
-              const displayModLines = [ ...modLines ];
+              const displayModLines = [...modLines];
               while (displayModLines.length < maxDisplayLines) {
                 displayModLines.push("");
               }
@@ -99,18 +99,18 @@ export function HistoryView() {
                   )}
 
                   <div className="relative flex items-center justify-between">
-                    <span className="min-w-[ 70px ] truncate text-xs font-bold text-accent-primary">
-                      {getRelativeTime(item.createdAt)}
+                    <span className="min-w-[70px] truncate text-xs font-bold text-accent-primary">
+                       {getRelativeTime(item.createdAt)}
                     </span>
 
                     <div className="mx-4 flex flex-1 items-center gap-4 overflow-hidden">
                       <div className="flex flex-1 flex-col overflow-hidden">
-                        <span className="mb-1 text-[ 11px ] font-semibold text-danger">
+                        <span className="mb-1 text-[11px] font-semibold text-danger">
                           {getLineCount(item.originalText)} lines
                         </span>
                         <div className="flex flex-col gap-0.5 rounded bg-bg-secondary px-3 py-2">
                           {displayOrigLines.map((line, idx) => (
-                            <span key={`orig-${idx}`} className="block truncate font-mono text-xs text-text-secondary min-h-[ 16px ]">
+                            <span key={`orig-${idx}`} className="block truncate font-mono text-xs text-text-secondary min-h-[16px]">
                               {line === "" ? "\u00A0" : line}
                             </span>
                           ))}
@@ -120,12 +120,12 @@ export function HistoryView() {
                       <MdArrowForward className="text-lg shrink-0 text-text-secondary" />
 
                       <div className="flex flex-1 flex-col overflow-hidden">
-                        <span className="mb-1 text-[ 11px ] font-semibold text-success">
+                        <span className="mb-1 text-[11px] font-semibold text-success">
                           {getLineCount(item.modifiedText)} lines
                         </span>
                         <div className="flex flex-col gap-0.5 rounded bg-bg-secondary px-3 py-2">
                           {displayModLines.map((line, idx) => (
-                            <span key={`mod-${idx}`} className="block truncate font-mono text-xs font-semibold text-text-primary min-h-[ 16px ]">
+                            <span key={`mod-${idx}`} className="block truncate font-mono text-xs font-semibold text-text-primary min-h-[16px]">
                               {line === "" ? "\u00A0" : line}
                             </span>
                           ))}

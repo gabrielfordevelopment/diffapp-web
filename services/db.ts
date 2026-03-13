@@ -1,5 +1,5 @@
 import Dexie, { type Table } from "dexie";
-import { DiffHistoryItem } from "../types/history";
+import { DiffHistoryItem } from "@/types/history";
 
 export class DiffAppDatabase extends Dexie {
   history!: Table<DiffHistoryItem, string>;

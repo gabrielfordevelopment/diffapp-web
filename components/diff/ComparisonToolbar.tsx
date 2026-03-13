@@ -2,9 +2,9 @@
 
 import { useState, useMemo } from "react";
 import { MdContentCopy, MdSwapHoriz, MdDelete, MdDescription, MdCheck } from "react-icons/md";
-import { useEditorStore } from "../../store/useEditorStore";
-import { useSettingsStore } from "../../store/useSettingsStore";
-import { calculateStats } from "../../utils/diffHelpers";
+import { useEditorStore } from "@/store/useEditorStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
+import { calculateStats } from "@/utils/diffHelpers";
 
 export function ComparisonToolbar() {
   const { comparisonResult, leftText, rightText, swapTexts, clearContent } = useEditorStore();
@@ -16,8 +16,7 @@ export function ComparisonToolbar() {
     return calculateStats(comparisonResult?.blocks, settings.ignoreWhitespace);
   }, [comparisonResult, settings.ignoreWhitespace]);
 
-  const leftLineCount = useMemo(() => leftText ? leftText.split(/\r?\n/).length : 0,[leftText]);
-
+  const leftLineCount = useMemo(() => leftText ? leftText.split(/\r?\n/).length : 0, [leftText]);
   const rightLineCount = useMemo(() => rightText ? rightText.split(/\r?\n/).length : 0, [rightText]);
 
   const handleCopy = (text: string, side: "left" | "right") => {
