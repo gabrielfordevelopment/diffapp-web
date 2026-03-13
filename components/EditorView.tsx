@@ -1,6 +1,6 @@
 "use client";
 
-import { MdBorderColor, MdKeyboardArrowDown, MdKeyboardArrowUp, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdTune } from "react-icons/md";
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight, MdKeyboardArrowUp, MdTune } from "react-icons/md";
 import { useEditorStore } from "../store/useEditorStore";
 import { useSettingsStore } from "../store/useSettingsStore";
 import { SettingsView } from "./SettingsView";
@@ -15,35 +15,44 @@ export function EditorView() {
   const hasResult = comparisonResult && comparisonResult.blocks.length > 0;
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-bg-primary">
-      <div className="relative flex h-full shrink-0 z-30">
-        <div
-          className={clsx(
-            "flex flex-col bg-bg-secondary transition-all duration-300 overflow-hidden h-full border-border-default",
-            settings.isSettingsPanelOpen ? "w-64 border-r" : "w-0 border-r-0"
-          )}
-        >
-          <div className="flex w-64 flex-col h-full shrink-0">
-            <div className="flex items-center gap-2 border-b border-border-default p-4 shrink-0 bg-bg-secondary">
+    <div className="flex h-full w-full overflow-hidden bg-bg-primary relative">
+      <div
+        className={clsx(
+          "flex flex-col bg-bg-secondary transition-all duration-300 overflow-hidden h-full shrink-0 z-10",
+          settings.isSettingsPanelOpen ? "w-64 border-r border-border-default" : "w-0 border-r-0"
+        )}
+      >
+        <div className="flex w-64 flex-col h-full shrink-0">
+          <div className="flex items-center justify-between border-b border-border-default p-4 shrink-0 bg-bg-secondary">
+            <div className="flex items-center gap-2">
               <MdTune className="text-xl text-text-secondary" />
               <h2 className="text-base font-bold text-text-primary">Settings</h2>
             </div>
-            <div className="flex-1 overflow-y-auto custom-scrollbar">
-              <SettingsView />
-            </div>
+            <button
+              onClick={() => updateSettings({ isSettingsPanelOpen: false })}
+              className="flex items-center justify-center rounded p-1 text-text-secondary hover:bg-hover-overlay hover:text-text-primary transition-colors"
+              title="Close Settings"
+            >
+              <MdKeyboardArrowLeft className="text-2xl" />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
+            <SettingsView />
           </div>
         </div>
-
-        <button
-          onClick={() => updateSettings({ isSettingsPanelOpen: !settings.isSettingsPanelOpen })}
-          className="absolute top-14 -right-8 flex h-20 w-8 items-center justify-center rounded-r-md bg-accent-primary text-white shadow-md hover:bg-accent-hover transition-colors z-40"
-          title={settings.isSettingsPanelOpen ? "Close Settings" : "Open Settings"}
-        >
-          {settings.isSettingsPanelOpen ? <MdKeyboardArrowLeft className="text-3xl" /> : <MdKeyboardArrowRight className="text-3xl" />}
-        </button>
       </div>
 
       <div className="flex flex-1 flex-col overflow-hidden relative z-0">
+        {!settings.isSettingsPanelOpen && (
+          <button
+            onClick={() => updateSettings({ isSettingsPanelOpen: true })}
+            className="absolute left-0 top-6 z-30 flex h-12 w-6 items-center justify-center rounded-r-md bg-accent-primary text-white shadow-md hover:bg-accent-hover transition-colors"
+            title="Open Settings"
+          >
+            <MdKeyboardArrowRight className="text-2xl" />
+          </button>
+        )}
+
         <div
           className={clsx(
             "flex flex-col bg-bg-primary relative",
@@ -53,21 +62,21 @@ export function EditorView() {
           <ComparisonView />
         </div>
 
-        <div className="w-full h-12 shrink-0 flex items-center justify-center z-20 bg-bg-primary border-t border-b border-border-default shadow-sm relative">
+        {!isInputExpanded && (
           <button
             onClick={toggleInputPanel}
-            className="flex items-center gap-2 bg-accent-primary text-white hover:bg-accent-hover shadow-md px-6 py-1.5 rounded-full text-sm font-semibold transition-colors"
+            className="absolute bottom-0 left-1/2 -translate-x-1/2 z-30 flex h-8 pl-3 pr-5 items-center justify-center gap-1 rounded-t-md bg-accent-primary text-white shadow-md hover:bg-accent-hover transition-colors text-sm font-semibold"
+            title="Show Input"
           >
-            <MdBorderColor className="text-lg" />
-            <span>{isInputExpanded ? "Hide Input" : "Show Input"}</span>
-            {isInputExpanded ? <MdKeyboardArrowDown className="text-xl" /> : <MdKeyboardArrowUp className="text-xl" />}
+            <MdKeyboardArrowUp className="text-xl" />
+            <span>Input Editor</span>
           </button>
-        </div>
+        )}
 
         <div
           className={clsx(
-            "flex flex-col shrink-0 transition-all duration-300 ease-in-out overflow-hidden bg-bg-primary",
-            isInputExpanded ? (hasResult ? "h-[450px]" : "flex-1") : "h-0 opacity-0"
+            "flex flex-col shrink-0 transition-all duration-300 ease-in-out overflow-hidden bg-bg-primary z-10",
+            isInputExpanded ? (hasResult ? "h-[450px] border-t border-border-default shadow-sm" : "flex-1") : "h-0 opacity-0"
           )}
         >
           <InputView />

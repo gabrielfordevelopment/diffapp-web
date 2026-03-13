@@ -1,11 +1,11 @@
 "use client";
 
-import { MdDescription, MdSearch } from "react-icons/md";
+import { MdDescription, MdSearch, MdKeyboardArrowDown } from "react-icons/md";
 import { useEditorStore } from "../store/useEditorStore";
 import { useSettingsStore } from "../store/useSettingsStore";
 
 export function InputView() {
-  const { leftText, rightText, setLeftText, setRightText, compare } = useEditorStore();
+  const { leftText, rightText, setLeftText, setRightText, compare, toggleInputPanel } = useEditorStore();
   const settings = useSettingsStore((state) => state.settings);
 
   const handleCompare = () => {
@@ -17,13 +17,23 @@ export function InputView() {
   return (
     <div className="flex flex-col w-full h-full p-4 bg-bg-secondary">
       <div className="flex items-center justify-between mb-2 px-2 gap-4">
-        <div className="flex flex-1 items-center gap-2">
-          <MdDescription className="text-text-secondary text-lg" />
-          <span className="font-bold text-text-primary text-sm">Original Text</span>
+        <div className="flex flex-1 items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <MdDescription className="text-text-secondary text-lg" />
+            <span className="font-bold text-text-primary text-sm">Original Text</span>
+          </div>
+          <button
+            onClick={toggleInputPanel}
+            className="flex items-center gap-1 bg-accent-primary text-white hover:bg-accent-hover shadow-sm px-3 py-1.5 rounded-md transition-colors"
+            title="Hide Input Editor"
+          >
+            <span className="text-xs font-bold tracking-wider">Hide Input Editor</span>
+            <MdKeyboardArrowDown className="text-lg" />
+          </button>
         </div>
         <div className="flex flex-1 items-center gap-2">
           <MdDescription className="text-text-secondary text-lg" />
-          <span className="font-bold text-text-primary text-sm">Changed Text</span>
+          <span className="font-bold text-text-primary text-sm">Modified Text</span>
         </div>
       </div>
 

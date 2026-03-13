@@ -28,26 +28,25 @@ export function ComparisonView() {
   const isSyncingScroll = useRef<"left" | "right" | null>(null);
   const syncTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  const [ copiedSide, setCopiedSide ] = useState<"left" | "right" | null>(null);
-  const [ hoveredBlockId, setHoveredBlockId ] = useState<string | null>(null);
+  const [copiedSide, setCopiedSide] = useState<"left" | "right" | null>(null);
+  const [hoveredBlockId, setHoveredBlockId] = useState<string | null>(null);
 
   useEffect(() => {
     if (leftText || rightText) {
       compare(settings, false, true);
     }
-  }, [ settings.precision ]);
+  }, [settings.precision]);
 
   const stats = useMemo(() => {
     return calculateStats(comparisonResult?.blocks, settings.ignoreWhitespace);
-  }, [ comparisonResult, settings.ignoreWhitespace ]);
+  }, [comparisonResult, settings.ignoreWhitespace]);
 
-  const leftLineCount = useMemo(() => leftText ? leftText.split(/\r?\n/).length : 0, [ leftText ]);
-  const rightLineCount = useMemo(() => rightText ? rightText.split(/\r?\n/).length : 0, [ rightText ]);
+  const leftLineCount = useMemo(() => leftText ? leftText.split(/\r?\n/).length : 0, [leftText]);
+  const rightLineCount = useMemo(() => rightText ? rightText.split(/\r?\n/).length : 0, [rightText]);
 
   const handleCopy = (text: string, side: "left" | "right") => {
     if (!text) return;
     navigator.clipboard.writeText(text).catch(() => {});
-
     setCopiedSide(side);
     setTimeout(() => {
       setCopiedSide((prev) => (prev === side ? null : prev));
@@ -207,11 +206,11 @@ export function ComparisonView() {
                         {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
                         <div className="flex flex-col w-full relative z-0">
                           {Array.from({ length: maxLines }).map((_, idx) => {
-                            const oldLine = block.oldLines[ idx ] || { lineNumber: null, kind: DiffChangeType.Imaginary, fragments: [ ] };
-                            const newLine = block.newLines[ idx ] || { lineNumber: null, kind: DiffChangeType.Imaginary, fragments: [ ] };
+                            const oldLine = block.oldLines[idx] || { lineNumber: null, kind: DiffChangeType.Imaginary, fragments: [ ] };
+                            const newLine = block.newLines[idx] || { lineNumber: null, kind: DiffChangeType.Imaginary, fragments: [ ] };
 
                             return (
-                              <div key={idx} className="flex min-h-[ 24px ] w-full">
+                              <div key={idx} className="flex min-h-[24px] w-full">
                                 <div className={clsx("flex flex-1 w-1/2", getBlockColorClass(block.kind, "old", block.isWhitespaceChange, settings.ignoreWhitespace), oldLine.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg")}>
                                   <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-0 z-10">
                                     {oldLine.lineNumber}
@@ -295,7 +294,7 @@ export function ComparisonView() {
                           {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
                           <div className={clsx("flex w-full flex-col relative z-0", getBlockColorClass(block.kind, "old", block.isWhitespaceChange, settings.ignoreWhitespace))}>
                             {block.oldLines.map((line, idx) => (
-                              <div key={idx} className={clsx("flex min-h-[ 24px ] w-full", line.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg")}>
+                              <div key={idx} className={clsx("flex min-h-[24px] w-full", line.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg")}>
                                 <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-0 z-10">
                                   {line.lineNumber}
                                 </div>
@@ -354,7 +353,7 @@ export function ComparisonView() {
                           {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
                           <div className={clsx("flex w-full flex-col relative z-0", getBlockColorClass(block.kind, "new", block.isWhitespaceChange, settings.ignoreWhitespace))}>
                             {block.newLines.map((line, idx) => (
-                              <div key={idx} className={clsx("flex min-h-[ 24px ] w-full", line.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg")}>
+                              <div key={idx} className={clsx("flex min-h-[24px] w-full", line.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg")}>
                                 <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-0 z-10">
                                   {line.lineNumber}
                                 </div>
@@ -434,14 +433,14 @@ export function ComparisonView() {
                               }
                             });
                             return lines.map((l, idx) => (
-                              <div key={idx} className={clsx("flex min-h-[ 24px ] w-full", l.bgClass)}>
+                              <div key={idx} className={clsx("flex min-h-[24px] w-full", l.bgClass)}>
                                 <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary py-0.5 sticky left-0 z-10">
                                   {l.line1}
                                 </div>
-                                <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-[ 40px ] z-10">
+                                <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-[40px] z-10">
                                   {l.line2}
                                 </div>
-                                <div className="w-6 shrink-0 select-none px-1 text-center font-bold text-text-secondary py-0.5 sticky left-[ 80px ] z-10 bg-bg-secondary">
+                                <div className="w-6 shrink-0 select-none px-1 text-center font-bold text-text-secondary py-0.5 sticky left-[80px] z-10 bg-bg-secondary">
                                   {l.sign}
                                 </div>
                                 <div className={clsx("px-2 py-0.5 font-mono", wordWrapClass)}>
@@ -456,8 +455,8 @@ export function ComparisonView() {
                           } else {
                             const maxLines = Math.max(block.oldLines.length, block.newLines.length);
                             return Array.from({ length: maxLines }).map((_, idx) => {
-                              const oldLine = block.oldLines[ idx ];
-                              const newLine = block.newLines[ idx ];
+                              const oldLine = block.oldLines[idx];
+                              const newLine = block.newLines[idx];
                               const isRemoved = block.kind === BlockType.Removed;
                               const isAdded = block.kind === BlockType.Added;
 
@@ -466,14 +465,14 @@ export function ComparisonView() {
                               if (isAdded) bgClass = getBlockColorClass(BlockType.Added, "new", block.isWhitespaceChange, settings.ignoreWhitespace);
 
                               return (
-                                <div key={idx} className={clsx("flex min-h-[ 24px ] w-full", bgClass)}>
+                                <div key={idx} className={clsx("flex min-h-[24px] w-full", bgClass)}>
                                   <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary py-0.5 sticky left-0 z-10">
                                     {oldLine?.lineNumber || ""}
                                   </div>
-                                  <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-[ 40px ] z-10">
+                                  <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-[40px] z-10">
                                     {newLine?.lineNumber || ""}
                                   </div>
-                                  <div className="w-6 shrink-0 select-none px-1 text-center font-bold text-text-secondary py-0.5 sticky left-[ 80px ] z-10 bg-bg-secondary">
+                                  <div className="w-6 shrink-0 select-none px-1 text-center font-bold text-text-secondary py-0.5 sticky left-[80px] z-10 bg-bg-secondary">
                                     {isRemoved ? "-" : isAdded ? "+" : " "}
                                   </div>
                                   <div className={clsx("px-2 py-0.5 font-mono", wordWrapClass)}>
