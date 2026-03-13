@@ -63,7 +63,7 @@ export function DiffMinimap({ blocks, ignoreWhitespace, onSegmentClick }: DiffMi
   };
 
   return (
-    <div className="h-full w-6 shrink-0 bg-background-ui border-l border-r border-gray-300 relative cursor-default">
+    <div className="h-full w-6 shrink-0 bg-bg-secondary border-l border-r border-border-default relative cursor-default">
       {segments.map((seg) => (
         <div
           key={seg.id}
@@ -74,7 +74,7 @@ export function DiffMinimap({ blocks, ignoreWhitespace, onSegmentClick }: DiffMi
           className="absolute w-full flex opacity-80 hover:opacity-100 transition-opacity cursor-pointer z-40"
           style={{ top: `${seg.offsetPct}%`, height: `${seg.heightPct}%` }}
         >
-          <div className={clsx("flex-1 border-r border-gray-200/50", getLeftColor(seg.kind))} />
+          <div className={clsx("flex-1 border-r border-border-default", getLeftColor(seg.kind))} />
           <div className={clsx("flex-1", getRightColor(seg.kind))} />
         </div>
       ))}

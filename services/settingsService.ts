@@ -8,7 +8,8 @@ const defaultSettings: AppSettings = {
   precision: PrecisionLevel.Word,
   viewMode: ViewMode.Split,
   fontSize: 13.0,
-  isSettingsPanelOpen: true
+  isSettingsPanelOpen: true,
+  theme: "light"
 };
 
 export class SettingsService {
@@ -48,7 +49,6 @@ export class SettingsService {
       ...defaultSettings,
       isSettingsPanelOpen: currentSettings.isSettingsPanelOpen
     };
-    
     this.saveSettings(resetSettings);
   }
 }

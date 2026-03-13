@@ -1,40 +1,65 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background-main: var(--bg-main);
-  --color-background-ui: var(--bg-ui);
-  --color-text-main: var(--text-main);
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-selected: var(--bg-selected);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-border-default: var(--border-default);
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-hover: var(--accent-hover);
   --color-diff-added-bg: var(--diff-added-bg);
   --color-diff-added-fg: var(--diff-added-fg);
   --color-diff-removed-bg: var(--diff-removed-bg);
   --color-diff-removed-fg: var(--diff-removed-fg);
   --color-diff-empty-bg: var(--diff-empty-bg);
   --color-hover-overlay: var(--hover-overlay);
-  --color-ui-selected-bg: var(--ui-selected-bg);
-  --color-ui-hover-bg: var(--ui-hover-bg);
   --color-minimap-added: var(--minimap-added);
   --color-minimap-removed: var(--minimap-removed);
 }
 
-:root {
-  --bg-main: #ffffff;
-  --bg-ui: #f6f8fa;
-  --text-main: #24292e;
+:root, [ data-theme="light" ] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f6f8fa;
+  --bg-selected: #f0f8ff;
+  --text-primary: #24292e;
+  --text-secondary: #6b7280;
+  --border-default: #d1d5db;
+  --accent-primary: #2563eb;
+  --accent-hover: #1d4ed8;
   --diff-added-bg: #e6ffed;
   --diff-added-fg: #acf2bd;
   --diff-removed-bg: #ffeef0;
   --diff-removed-fg: #fdb8c0;
   --diff-empty-bg: #f0f0f0;
   --hover-overlay: rgba(0, 0, 0, 0.05);
-  --ui-selected-bg: #f0f8ff;
-  --ui-hover-bg: #f8f8f8;
   --minimap-added: #8fe3c7;
   --minimap-removed: #f5a4a4;
 }
 
+[ data-theme="dark" ] {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-selected: #1f2937;
+  --text-primary: #c9d1d9;
+  --text-secondary: #8b949e;
+  --border-default: #30363d;
+  --accent-primary: #3b82f6;
+  --accent-hover: #60a5fa;
+  --diff-added-bg: #04260f;
+  --diff-added-fg: #2ea043;
+  --diff-removed-bg: #3b0b12;
+  --diff-removed-fg: #f85149;
+  --diff-empty-bg: #21262d;
+  --hover-overlay: rgba(255, 255, 255, 0.05);
+  --minimap-added: #2ea043;
+  --minimap-removed: #f85149;
+}
+
 body {
-  background-color: var(--bg-ui);
-  color: var(--text-main);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   margin: 0;
   padding: 0;
   font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -50,12 +75,12 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
+  background-color: var(--border-default);
   border-radius: 10px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #94a3b8;
+  background-color: var(--text-secondary);
 }
 
 .hide-vertical-scrollbar::-webkit-scrollbar {
@@ -68,10 +93,10 @@ body {
 }
 
 .hide-vertical-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
+  background-color: var(--border-default);
   border-radius: 10px;
 }
 
 .hide-vertical-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #94a3b8;
+  background-color: var(--text-secondary);
 }

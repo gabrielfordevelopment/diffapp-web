@@ -22,18 +22,18 @@ export function getBlockColorClass(kind: BlockType, side: "old" | "new", isWhite
 
 export function getFragmentColorClass(kind: DiffChangeType, isWhitespaceChange: boolean, ignoreWhitespace: boolean): string {
   if (ignoreWhitespace && isWhitespaceChange) {
-    return "bg-transparent text-gray-900";
+    return "bg-transparent text-text-primary";
   }
 
   if (kind === DiffChangeType.Inserted) {
-    return "bg-diff-added-fg text-gray-900";
+    return "bg-diff-added-fg text-text-primary";
   }
 
   if (kind === DiffChangeType.Deleted) {
-    return "bg-diff-removed-fg text-gray-900";
+    return "bg-diff-removed-fg text-text-primary";
   }
 
-  return "bg-transparent text-gray-900";
+  return "bg-transparent text-text-primary";
 }
 
 export function calculateStats(blocks: Array<ChangeBlock> | undefined, ignoreWhitespace: boolean) {

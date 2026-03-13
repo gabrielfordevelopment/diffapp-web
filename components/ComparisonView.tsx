@@ -42,21 +42,18 @@ export function ComparisonView() {
   }, [ comparisonResult, settings.ignoreWhitespace ]);
 
   const leftLineCount = useMemo(() => leftText ? leftText.split(/\r?\n/).length : 0, [ leftText ]);
-
   const rightLineCount = useMemo(() => rightText ? rightText.split(/\r?\n/).length : 0, [ rightText ]);
 
   const handleCopy = (text: string, side: "left" | "right") => {
     navigator.clipboard.writeText(text).catch(() => {});
     setCopiedSide(side);
-
     setTimeout(() => {
       setCopiedSide((prev) => (prev === side ? null : prev));
     }, 2000);
   };
 
   const handleScrollRequest = (percentage: number) => {
-    const container = (settings.viewMode === ViewMode.Split && !settings.isWordWrapEnabled) ?
-      leftScrollRef.current : unifiedScrollRef.current;
+    const container = (settings.viewMode === ViewMode.Split && !settings.isWordWrapEnabled) ? leftScrollRef.current : unifiedScrollRef.current;
     if (container) {
       const targetScroll = percentage * (container.scrollHeight - container.clientHeight);
       container.scrollTo({ top: targetScroll, behavior: "smooth" });
@@ -65,10 +62,8 @@ export function ComparisonView() {
 
   const handleSegmentClick = (blockId: string) => {
     selectBlock(blockId);
-
     const prefix = (settings.viewMode === ViewMode.Split && !settings.isWordWrapEnabled) ? "block-left-" : "block-unified-";
     const element = document.getElementById(`${prefix}${blockId}`);
-
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
     }
@@ -77,12 +72,11 @@ export function ComparisonView() {
   const handleLeftScroll = (e: React.UIEvent<HTMLDivElement>) => {
     if (isSyncingScroll.current === "right") return;
     isSyncingScroll.current = "left";
-
     if (rightScrollRef.current) {
       rightScrollRef.current.scrollTop = e.currentTarget.scrollTop;
       rightScrollRef.current.scrollLeft = e.currentTarget.scrollLeft;
     }
-    
+
     if (syncTimeout.current) clearTimeout(syncTimeout.current);
     syncTimeout.current = setTimeout(() => {
       isSyncingScroll.current = null;
@@ -92,12 +86,11 @@ export function ComparisonView() {
   const handleRightScroll = (e: React.UIEvent<HTMLDivElement>) => {
     if (isSyncingScroll.current === "left") return;
     isSyncingScroll.current = "right";
-
     if (leftScrollRef.current) {
       leftScrollRef.current.scrollTop = e.currentTarget.scrollTop;
       leftScrollRef.current.scrollLeft = e.currentTarget.scrollLeft;
     }
-    
+
     if (syncTimeout.current) clearTimeout(syncTimeout.current);
     syncTimeout.current = setTimeout(() => {
       isSyncingScroll.current = null;
@@ -112,20 +105,20 @@ export function ComparisonView() {
   const containerWidthClass = settings.isWordWrapEnabled ? "w-full" : "min-w-max";
 
   return (
-    <div className="flex h-full w-full flex-col bg-white relative">
-      <div className="flex items-center justify-between border-b border-gray-300 bg-background-ui px-4 py-1.5 shrink-0 z-20">
+    <div className="flex h-full w-full flex-col bg-bg-primary relative">
+      <div className="flex items-center justify-between border-b border-border-default bg-bg-secondary px-4 py-1.5 shrink-0 z-20">
         <div className="flex flex-1 items-center justify-between">
           <div className="flex items-center gap-2">
-            <MdDescription className="text-xl text-gray-500" />
-            <span className="font-bold text-red-600 text-sm">{stats.removals} removals</span>
+            <MdDescription className="text-xl text-text-secondary" />
+            <span className="font-bold text-diff-removed-fg text-sm">{stats.removals} removals</span>
           </div>
-         
+
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-500">{leftLineCount} lines</span>
+            <span className="text-sm text-text-secondary">{leftLineCount} lines</span>
             <button
               onClick={() => handleCopy(leftText, "left")}
               disabled={copiedSide === "left"}
-              className="flex items-center gap-1 text-blue-600 hover:bg-gray-200 px-2 py-1.5 rounded disabled:text-green-600 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-all"
+              className="flex items-center gap-1 text-accent-primary hover:bg-hover-overlay px-2 py-1.5 rounded disabled:text-diff-added-fg disabled:hover:bg-transparent disabled:cursor-not-allowed transition-all"
               title="Copy Original Text"
             >
               {copiedSide === "left" ? (
@@ -143,21 +136,21 @@ export function ComparisonView() {
           </div>
         </div>
 
-        <button onClick={() => swapTexts(settings)} className="mx-6 text-2xl text-blue-600 hover:bg-gray-200 p-1.5 rounded" title="Swap Sides">
+        <button onClick={() => swapTexts(settings)} className="mx-6 text-2xl text-accent-primary hover:bg-hover-overlay p-1.5 rounded" title="Swap Sides">
           <MdSwapHoriz />
         </button>
 
         <div className="flex flex-1 items-center justify-between">
           <div className="flex items-center gap-2">
-            <MdDescription className="text-xl text-gray-500" />
-            <span className="font-bold text-green-600 text-sm">{stats.additions} additions</span>
+            <MdDescription className="text-xl text-text-secondary" />
+            <span className="font-bold text-diff-added-fg text-sm">{stats.additions} additions</span>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-500">{rightLineCount} lines</span>
+            <span className="text-sm text-text-secondary">{rightLineCount} lines</span>
             <button
               onClick={() => handleCopy(rightText, "right")}
               disabled={copiedSide === "right"}
-              className="flex items-center gap-1 text-blue-600 hover:bg-gray-200 px-2 py-1.5 rounded disabled:text-green-600 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-all"
+              className="flex items-center gap-1 text-accent-primary hover:bg-hover-overlay px-2 py-1.5 rounded disabled:text-diff-added-fg disabled:hover:bg-transparent disabled:cursor-not-allowed transition-all"
               title="Copy Modified Text"
             >
               {copiedSide === "right" ? (
@@ -172,8 +165,8 @@ export function ComparisonView() {
                 </>
               )}
             </button>
-            <div className="w-px h-6 bg-gray-300 mx-2" />
-            <button onClick={clearContent} className="flex items-center gap-1 bg-red-600 text-white px-3 py-1.5 rounded text-sm font-semibold hover:bg-red-700">
+            <div className="w-px h-6 bg-border-default mx-2" />
+            <button onClick={clearContent} className="flex items-center gap-1 bg-diff-removed-fg text-white px-3 py-1.5 rounded text-sm font-semibold hover:opacity-80">
               <MdDelete />
               Clear
             </button>
@@ -198,17 +191,17 @@ export function ComparisonView() {
                       className={clsx(
                         "flex flex-col border-y-2 border-transparent w-full relative",
                         block.kind !== BlockType.Unchanged && "cursor-pointer",
-                        block.isSelected && "bg-ui-selected-bg border-blue-500"
+                        block.isSelected && "bg-bg-selected border-accent-primary"
                       )}
                     >
                       {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
                       <div className="flex flex-col w-full relative z-0">
                         {block.oldLines.map((oldLine, idx) => {
-                          const newLine = block.newLines[idx];
+                          const newLine = block.newLines[ idx ];
                           return (
                             <div key={idx} className="flex min-h-[24px] w-full">
                               <div className={clsx("flex flex-1 w-1/2", getBlockColorClass(block.kind, "old", block.isWhitespaceChange, settings.ignoreWhitespace), oldLine.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg")}>
-                                <div className="w-10 shrink-0 select-none bg-background-ui px-2 text-right text-gray-400 border-r border-gray-200 py-0.5 sticky left-0 z-10">
+                                <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-0 z-10">
                                   {oldLine.lineNumber}
                                 </div>
                                 <div className={clsx("px-2 py-0.5 font-mono", wordWrapClass)}>
@@ -219,8 +212,8 @@ export function ComparisonView() {
                                   ))}
                                 </div>
                               </div>
-                              <div className={clsx("flex flex-1 w-1/2 border-l border-gray-300", getBlockColorClass(block.kind, "new", block.isWhitespaceChange, settings.ignoreWhitespace), newLine.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg")}>
-                                <div className="w-10 shrink-0 select-none bg-background-ui px-2 text-right text-gray-400 border-r border-gray-200 py-0.5 sticky left-0 z-10">
+                              <div className={clsx("flex flex-1 w-1/2 border-l border-border-default", getBlockColorClass(block.kind, "new", block.isWhitespaceChange, settings.ignoreWhitespace), newLine.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg")}>
+                                <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-0 z-10">
                                   {newLine.lineNumber}
                                 </div>
                                 <div className={clsx("px-2 py-0.5 font-mono", wordWrapClass)}>
@@ -236,11 +229,11 @@ export function ComparisonView() {
                         })}
                       </div>
                       {block.isSelected && block.kind !== BlockType.Unchanged && (
-                        <div className="flex items-center justify-between w-full border-t border-blue-400 bg-blue-100 relative h-12 z-20 px-4">
+                        <div className="flex items-center justify-between w-full border-t border-accent-primary bg-bg-selected relative h-12 z-20 px-4">
                           <div className="flex items-center gap-4 flex-1 justify-end pr-4 border-r border-transparent">
                             <button
                               onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.LeftToRight, settings); }}
-                              className="flex items-center gap-2 rounded bg-red-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
+                              className="flex items-center gap-2 rounded bg-diff-removed-fg px-4 py-1.5 text-sm font-semibold text-white hover:opacity-80 transition-colors"
                             >
                               <span>Merge</span>
                               <MdEast />
@@ -248,14 +241,14 @@ export function ComparisonView() {
                           </div>
                           <button
                             onClick={(e) => { e.stopPropagation(); selectBlock(null); }}
-                            className="rounded p-1 text-gray-500 hover:bg-gray-200 transition-colors shrink-0"
+                            className="rounded p-1 text-text-secondary hover:bg-hover-overlay transition-colors shrink-0"
                           >
                             <MdClose className="text-xl" />
                           </button>
                           <div className="flex items-center gap-4 flex-1 justify-start pl-4">
                             <button
                               onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.RightToLeft, settings); }}
-                              className="flex items-center gap-2 rounded bg-green-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-green-700 transition-colors"
+                              className="flex items-center gap-2 rounded bg-diff-added-fg px-4 py-1.5 text-sm font-semibold text-text-primary hover:opacity-80 transition-colors"
                             >
                               <MdWest />
                               <span>Merge</span>
@@ -270,7 +263,7 @@ export function ComparisonView() {
             </div>
           ) : (
             <div className="flex h-full w-full">
-              <div className="flex-1 overflow-auto hide-vertical-scrollbar border-r border-gray-300" ref={leftScrollRef} onScroll={handleLeftScroll}>
+              <div className="flex-1 overflow-auto hide-vertical-scrollbar border-r border-border-default" ref={leftScrollRef} onScroll={handleLeftScroll}>
                 <div className={clsx("flex flex-col min-w-full h-max pb-8", containerWidthClass)}>
                   {comparisonResult.blocks.map((block) => {
                     const isHovered = hoveredBlockId === block.id && block.kind !== BlockType.Unchanged && !block.isSelected;
@@ -284,14 +277,14 @@ export function ComparisonView() {
                         className={clsx(
                           "flex flex-col border-y-2 border-transparent w-full relative",
                           block.kind !== BlockType.Unchanged && "cursor-pointer",
-                          block.isSelected && "bg-ui-selected-bg border-blue-500"
+                          block.isSelected && "bg-bg-selected border-accent-primary"
                         )}
                       >
                         {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
                         <div className={clsx("flex w-full flex-col relative z-0", getBlockColorClass(block.kind, "old", block.isWhitespaceChange, settings.ignoreWhitespace))}>
                           {block.oldLines.map((line, idx) => (
                             <div key={idx} className={clsx("flex min-h-[24px] w-full", line.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg")}>
-                              <div className="w-10 shrink-0 select-none bg-background-ui px-2 text-right text-gray-400 border-r border-gray-200 py-0.5 sticky left-0 z-10">
+                              <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-0 z-10">
                                 {line.lineNumber}
                               </div>
                               <div className={clsx("px-2 py-0.5 font-mono", wordWrapClass)}>
@@ -305,18 +298,18 @@ export function ComparisonView() {
                           ))}
                         </div>
                         {block.isSelected && block.kind !== BlockType.Unchanged && (
-                          <div className="flex items-center justify-end w-full min-w-full border-t border-blue-500 bg-blue-50 relative h-12 z-20">
+                          <div className="flex items-center justify-end w-full min-w-full border-t border-accent-primary bg-bg-selected relative h-12 z-20">
                             <div className="sticky right-0 flex items-center justify-end gap-4 px-4 h-full">
                               <button
                                 onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.LeftToRight, settings); }}
-                                className="flex items-center gap-2 rounded bg-red-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
+                                className="flex items-center gap-2 rounded bg-diff-removed-fg px-4 py-1.5 text-sm font-semibold text-white hover:opacity-80 transition-colors"
                               >
                                 <span>Merge</span>
                                 <MdEast />
                               </button>
                               <button
                                 onClick={(e) => { e.stopPropagation(); selectBlock(null); }}
-                                className="rounded p-1 text-gray-500 hover:bg-gray-200 transition-colors"
+                                className="rounded p-1 text-text-secondary hover:bg-hover-overlay transition-colors"
                               >
                                 <MdClose className="text-xl" />
                               </button>
@@ -343,14 +336,14 @@ export function ComparisonView() {
                         className={clsx(
                           "flex flex-col border-y-2 border-transparent w-full relative",
                           block.kind !== BlockType.Unchanged && "cursor-pointer",
-                          block.isSelected && "bg-ui-selected-bg border-blue-500"
+                          block.isSelected && "bg-bg-selected border-accent-primary"
                         )}
                       >
                         {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
                         <div className={clsx("flex w-full flex-col relative z-0", getBlockColorClass(block.kind, "new", block.isWhitespaceChange, settings.ignoreWhitespace))}>
                           {block.newLines.map((line, idx) => (
                             <div key={idx} className={clsx("flex min-h-[24px] w-full", line.kind === DiffChangeType.Imaginary && "bg-diff-empty-bg")}>
-                              <div className="w-10 shrink-0 select-none bg-background-ui px-2 text-right text-gray-400 border-r border-gray-200 py-0.5 sticky left-0 z-10">
+                              <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-0 z-10">
                                 {line.lineNumber}
                               </div>
                               <div className={clsx("px-2 py-0.5 font-mono", wordWrapClass)}>
@@ -364,11 +357,11 @@ export function ComparisonView() {
                           ))}
                         </div>
                         {block.isSelected && block.kind !== BlockType.Unchanged && (
-                          <div className="flex items-center justify-start w-full min-w-full border-t border-blue-500 bg-blue-50 relative h-12 z-20">
+                          <div className="flex items-center justify-start w-full min-w-full border-t border-accent-primary bg-bg-selected relative h-12 z-20">
                             <div className="sticky left-0 flex items-center justify-start px-4 h-full">
                               <button
                                 onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.RightToLeft, settings); }}
-                                className="flex items-center gap-2 rounded bg-green-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-green-700 transition-colors"
+                                className="flex items-center gap-2 rounded bg-diff-added-fg px-4 py-1.5 text-sm font-semibold text-text-primary hover:opacity-80 transition-colors"
                               >
                                 <MdWest />
                                 <span>Merge</span>
@@ -398,7 +391,7 @@ export function ComparisonView() {
                     className={clsx(
                       "flex flex-col border-y-2 border-transparent w-full relative",
                       block.kind !== BlockType.Unchanged && "cursor-pointer",
-                      block.isSelected && "bg-ui-selected-bg border-blue-500"
+                      block.isSelected && "bg-bg-selected border-accent-primary"
                     )}
                   >
                     {isHovered && <div className="absolute inset-0 bg-hover-overlay pointer-events-none z-10" />}
@@ -430,13 +423,13 @@ export function ComparisonView() {
                           });
                           return lines.map((l, idx) => (
                             <div key={idx} className={clsx("flex min-h-[24px] w-full", l.bgClass)}>
-                              <div className="w-10 shrink-0 select-none bg-background-ui px-2 text-right text-gray-400 py-0.5 sticky left-0 z-10">
+                              <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary py-0.5 sticky left-0 z-10">
                                 {l.line1}
                               </div>
-                              <div className="w-10 shrink-0 select-none bg-background-ui px-2 text-right text-gray-400 border-r border-gray-200 py-0.5 sticky left-[40px] z-10">
+                              <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-[40px] z-10">
                                 {l.line2}
                               </div>
-                              <div className="w-6 shrink-0 select-none px-1 text-center font-bold text-gray-400 py-0.5 sticky left-[80px] z-10 bg-background-ui">
+                              <div className="w-6 shrink-0 select-none px-1 text-center font-bold text-text-secondary py-0.5 sticky left-[80px] z-10 bg-bg-secondary">
                                 {l.sign}
                               </div>
                               <div className={clsx("px-2 py-0.5 font-mono", wordWrapClass)}>
@@ -460,13 +453,13 @@ export function ComparisonView() {
 
                             return (
                               <div key={idx} className={clsx("flex min-h-[24px] w-full", bgClass)}>
-                                <div className="w-10 shrink-0 select-none bg-background-ui px-2 text-right text-gray-400 py-0.5 sticky left-0 z-10">
+                                <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary py-0.5 sticky left-0 z-10">
                                   {line.lineNumber || ""}
                                 </div>
-                                <div className="w-10 shrink-0 select-none bg-background-ui px-2 text-right text-gray-400 border-r border-gray-200 py-0.5 sticky left-[40px] z-10">
+                                <div className="w-10 shrink-0 select-none bg-bg-secondary px-2 text-right text-text-secondary border-r border-border-default py-0.5 sticky left-[40px] z-10">
                                   {newLine?.lineNumber || ""}
                                 </div>
-                                <div className="w-6 shrink-0 select-none px-1 text-center font-bold text-gray-400 py-0.5 sticky left-[80px] z-10 bg-background-ui">
+                                <div className="w-6 shrink-0 select-none px-1 text-center font-bold text-text-secondary py-0.5 sticky left-[80px] z-10 bg-bg-secondary">
                                   {isRemoved ? "-" : isAdded ? "+" : " "}
                                 </div>
                                 <div className={clsx("px-2 py-0.5 font-mono", wordWrapClass)}>
@@ -483,24 +476,24 @@ export function ComparisonView() {
                       })()}
                     </div>
                     {block.isSelected && block.kind !== BlockType.Unchanged && (
-                      <div className="flex items-center justify-center w-full min-w-full border-t border-blue-500 bg-blue-50 relative h-12 z-20">
+                      <div className="flex items-center justify-center w-full min-w-full border-t border-accent-primary bg-bg-selected relative h-12 z-20">
                         <div className="sticky left-1/2 -translate-x-1/2 flex items-center justify-center gap-4 px-4 h-full w-max">
                           <button
                             onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.LeftToRight, settings); }}
-                            className="flex items-center gap-2 rounded bg-red-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
+                            className="flex items-center gap-2 rounded bg-diff-removed-fg px-4 py-1.5 text-sm font-semibold text-white hover:opacity-80 transition-colors"
                           >
                             <span>Merge</span>
                             <MdEast />
                           </button>
                           <button
                             onClick={(e) => { e.stopPropagation(); selectBlock(null); }}
-                            className="rounded p-1 text-gray-500 hover:bg-gray-200 transition-colors mx-2"
+                            className="rounded p-1 text-text-secondary hover:bg-hover-overlay transition-colors mx-2"
                           >
                             <MdClose className="text-xl" />
                           </button>
                           <button
                             onClick={(e) => { e.stopPropagation(); mergeBlock(block, MergeDirection.RightToLeft, settings); }}
-                            className="flex items-center gap-2 rounded bg-green-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-green-700 transition-colors"
+                            className="flex items-center gap-2 rounded bg-diff-added-fg px-4 py-1.5 text-sm font-semibold text-text-primary hover:opacity-80 transition-colors"
                           >
                             <MdWest />
                             <span>Merge</span>

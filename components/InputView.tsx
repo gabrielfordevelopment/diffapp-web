@@ -15,16 +15,15 @@ export function InputView() {
   };
 
   return (
-    <div className="flex flex-col w-full h-full p-4 bg-background-ui">
+    <div className="flex flex-col w-full h-full p-4 bg-bg-secondary">
       <div className="flex items-center justify-between mb-2 px-2 gap-4">
         <div className="flex flex-1 items-center gap-2">
-          <MdDescription className="text-gray-500 text-lg" />
-          <span className="font-bold text-gray-800 text-sm">Original Text</span>
+          <MdDescription className="text-text-secondary text-lg" />
+          <span className="font-bold text-text-primary text-sm">Original Text</span>
         </div>
         <div className="flex flex-1 items-center gap-2">
-          <MdDescription className="text-gray-500 text-lg" />
-  
-          <span className="font-bold text-gray-800 text-sm">Changed Text</span>
+          <MdDescription className="text-text-secondary text-lg" />
+          <span className="font-bold text-text-primary text-sm">Changed Text</span>
         </div>
       </div>
 
@@ -32,24 +31,20 @@ export function InputView() {
         <textarea
           value={leftText}
           onChange={(e) => setLeftText(e.target.value)}
-          className="flex-1 resize-none rounded-md border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono outline-none"
+          className="flex-1 resize-none rounded-md border border-border-default bg-bg-primary text-text-primary p-3 shadow-sm focus:border-accent-primary focus:ring-1 focus:ring-accent-primary font-mono outline-none"
           style={{
-   
             fontSize: `${settings.fontSize}px`,
-            whiteSpace: settings.isWordWrapEnabled ?
-              "pre-wrap" : "pre"
+            whiteSpace: settings.isWordWrapEnabled ? "pre-wrap" : "pre"
           }}
           spellCheck={false}
         />
         <textarea
           value={rightText}
           onChange={(e) => setRightText(e.target.value)}
-          className="flex-1 resize-none rounded-md border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-mono outline-none"
+          className="flex-1 resize-none rounded-md border border-border-default bg-bg-primary text-text-primary p-3 shadow-sm focus:border-accent-primary focus:ring-1 focus:ring-accent-primary font-mono outline-none"
           style={{
-         
             fontSize: `${settings.fontSize}px`,
-            whiteSpace: settings.isWordWrapEnabled ?
-              "pre-wrap" : "pre"
+            whiteSpace: settings.isWordWrapEnabled ? "pre-wrap" : "pre"
           }}
           spellCheck={false}
         />
@@ -59,8 +54,7 @@ export function InputView() {
         <button
           onClick={handleCompare}
           disabled={!leftText && !rightText}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed text-white px-8 py-2.5 rounded-md font-semibold transition-colors shadow-sm"
- 
+          className="flex items-center gap-2 bg-accent-primary hover:bg-accent-hover disabled:opacity-50 disabled:bg-accent-primary disabled:cursor-not-allowed text-white px-8 py-2.5 rounded-md font-semibold transition-colors shadow-sm"
         >
           <MdSearch className="text-xl" />
           Check it!

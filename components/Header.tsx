@@ -9,34 +9,34 @@ export function Header() {
   const navigate = useAppStore((state) => state.navigate);
 
   return (
-    <header className="flex h-12 shrink-0 items-center justify-between border-b border-gray-300 bg-white px-6">
+    <header className="flex h-12 shrink-0 items-center justify-between border-b border-border-default bg-bg-primary px-6">
       <div className="flex items-center gap-3">
-        <MdDifference className="text-2xl text-blue-600" />
-        <h1 className="text-lg font-bold text-gray-900">DiffApp</h1>
+        <MdDifference className="text-2xl text-accent-primary" />
+        <h1 className="text-lg font-bold text-text-primary">DiffApp</h1>
       </div>
       <nav className="flex items-center gap-2 h-full">
         <button
           onClick={() => navigate("editor")}
           className={clsx(
             "flex h-full items-center px-4 text-sm font-semibold transition-colors relative",
-            currentView === "editor" ? "text-blue-600" : "text-gray-500 hover:text-blue-600"
+            currentView === "editor" ? "text-accent-primary" : "text-text-secondary hover:text-accent-primary"
           )}
         >
           Editor
           {currentView === "editor" && (
-            <span className="absolute bottom-0 left-0 h-1 w-full bg-blue-600" />
+            <span className="absolute bottom-0 left-0 h-1 w-full bg-accent-primary" />
           )}
         </button>
         <button
           onClick={() => navigate("history")}
           className={clsx(
             "flex h-full items-center px-4 text-sm font-semibold transition-colors relative",
-            currentView === "history" ? "text-blue-600" : "text-gray-500 hover:text-blue-600"
+            currentView === "history" ? "text-accent-primary" : "text-text-secondary hover:text-accent-primary"
           )}
         >
           History
           {currentView === "history" && (
-            <span className="absolute bottom-0 left-0 h-1 w-full bg-blue-600" />
+            <span className="absolute bottom-0 left-0 h-1 w-full bg-accent-primary" />
           )}
         </button>
       </nav>

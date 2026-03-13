@@ -16,7 +16,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     precision: PrecisionLevel.Word,
     viewMode: ViewMode.Split,
     fontSize: 13.0,
-    isSettingsPanelOpen: true
+    isSettingsPanelOpen: true,
+    theme: "light"
   },
   loadSettings: () => {
     const loaded = SettingsService.loadSettings();
