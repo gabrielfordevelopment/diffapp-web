@@ -1,8 +1,8 @@
 "use client";
 
 import { MdSettings, MdExpandMore } from "react-icons/md";
-import { useSettingsStore } from "../store/useSettingsStore";
-import { AVAILABLE_THEMES } from "../config/themes";
+import { useSettingsStore } from "../../store/useSettingsStore";
+import { AVAILABLE_THEMES } from "../../config/themes";
 
 export function MainSettingsView() {
   const { settings, updateSettings } = useSettingsStore();

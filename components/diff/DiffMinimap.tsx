@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { BlockType, ChangeBlock } from "../types/diff";
+import { BlockType, ChangeBlock } from "../../types/diff";
 import clsx from "clsx";
 
 interface DiffMinimapProps {

@@ -2,11 +2,11 @@
 
 import { useEffect } from "react";
 import { MdHistory, MdDelete, MdHistoryToggleOff, MdArrowForward, MdBookmark, MdBookmarkBorder } from "react-icons/md";
-import { useHistoryStore } from "../store/useHistoryStore";
-import { useEditorStore } from "../store/useEditorStore";
-import { useAppStore } from "../store/useAppStore";
-import { useSettingsStore } from "../store/useSettingsStore";
-import { getLineCount, generatePreviewLines, getRelativeTime } from "../utils/formatters";
+import { useHistoryStore } from "../../store/useHistoryStore";
+import { useEditorStore } from "../../store/useEditorStore";
+import { useAppStore } from "../../store/useAppStore";
+import { useSettingsStore } from "../../store/useSettingsStore";
+import { getLineCount, generatePreviewLines, getRelativeTime } from "../../utils/formatters";
 import clsx from "clsx";
 
 export function HistoryView() {

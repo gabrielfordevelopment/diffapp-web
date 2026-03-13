@@ -1,11 +1,11 @@
 "use client";
 
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight, MdKeyboardArrowUp, MdTune } from "react-icons/md";
-import { useEditorStore } from "../store/useEditorStore";
-import { useSettingsStore } from "../store/useSettingsStore";
+import { useEditorStore } from "@/store/useEditorStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { OptionsView } from "./OptionsView";
 import { InputView } from "./InputView";
-import { ComparisonView } from "./ComparisonView";
+import { ComparisonView } from "@/components/diff/ComparisonView";
 import clsx from "clsx";
 
 export function EditorView() {

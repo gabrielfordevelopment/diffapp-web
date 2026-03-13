@@ -1,8 +1,8 @@
 "use client";
 
 import { MdDescription, MdSearch, MdKeyboardArrowDown } from "react-icons/md";
-import { useEditorStore } from "../store/useEditorStore";
-import { useSettingsStore } from "../store/useSettingsStore";
+import { useEditorStore } from "../../store/useEditorStore";
+import { useSettingsStore } from "../../store/useSettingsStore";
 
 export function InputView() {
   const { leftText, rightText, setLeftText, setRightText, compare, toggleInputPanel } = useEditorStore();
