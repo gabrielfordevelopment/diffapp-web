@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { BlockType, ChangeBlock } from "@/types/diff";
+import { calculateMinimapSegments } from "@/utils/diffHelpers";
 import clsx from "clsx";
 
 interface DiffMinimapProps {
@@ -12,44 +13,7 @@ interface DiffMinimapProps {
 
 export function DiffMinimap({ blocks, ignoreWhitespace, onSegmentClick }: DiffMinimapProps) {
   const segments = useMemo(() => {
-    let totalHeight = 0;
-
-    for (let i = 0; i < blocks.length; i++) {
-      totalHeight += Math.max(blocks[i].oldLines.length, blocks[i].newLines.length);
-    }
-
-    if (totalHeight === 0) {
-      totalHeight = 1;
-    }
-
-    let currentIndex = 0;
-    const result = [ ];
-
-    for (let i = 0; i < blocks.length; i++) {
-      const block = blocks[i];
-      const height = Math.max(block.oldLines.length, block.newLines.length);
-
-      if (block.kind !== BlockType.Unchanged) {
-        if (!(ignoreWhitespace && block.isWhitespaceChange)) {
-          const offsetPct = (currentIndex / totalHeight) * 100;
-          let heightPct = (height / totalHeight) * 100;
-
-          if (heightPct < 0.5) {
-            heightPct = 0.5;
-          }
-
-          result.push({
-            id: block.id,
-            offsetPct,
-            heightPct,
-            kind: block.kind
-          });
-        }
-      }
-      currentIndex += height;
-    }
-
-    return result;
+    return calculateMinimapSegments(blocks, ignoreWhitespace);
   }, [blocks, ignoreWhitespace]);
 
   const getLeftColor = (kind: BlockType) => {

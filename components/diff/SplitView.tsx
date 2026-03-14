@@ -1,18 +1,19 @@
 "use client";
 
 import { useRef, useState, useMemo } from "react";
-import { useVirtualizer, VirtualItem } from "@tanstack/react-virtual";
+import { VirtualItem } from "@tanstack/react-virtual";
 import { useEditorStore } from "@/store/useEditorStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { BlockType } from "@/types/diff";
 import { useSyncedScroll } from "@/hooks/useSyncedScroll";
+import { useDiffVirtualizer } from "@/hooks/useDiffVirtualizer";
 import { SplitRow, SplitRowData } from "./SplitRow";
 import clsx from "clsx";
 
 export function SplitView() {
   const { comparisonResult, selectBlock, mergeBlock } = useEditorStore();
   const { settings } = useSettingsStore();
-  
+
   const wrapScrollRef = useRef<HTMLDivElement>(null);
   const { leftScrollRef, rightScrollRef, handleLeftScroll, handleRightScroll } = useSyncedScroll();
 
@@ -74,26 +75,20 @@ export function SplitView() {
     return max;
   }, [comparisonResult, settings.isWordWrapEnabled]);
 
-  const wrapVirtualizer = useVirtualizer({
-    count: settings.isWordWrapEnabled ? rows.length : 0,
-    getScrollElement: () => wrapScrollRef.current,
-    estimateSize: () => 24,
-    overscan: 10
-  });
+  const wrapVirtualizer = useDiffVirtualizer(
+    settings.isWordWrapEnabled ? rows.length : 0,
+    () => wrapScrollRef.current
+  );
 
-  const leftVirtualizer = useVirtualizer({
-    count: !settings.isWordWrapEnabled ? rows.length : 0,
-    getScrollElement: () => leftScrollRef.current,
-    estimateSize: () => 24,
-    overscan: 10
-  });
+  const leftVirtualizer = useDiffVirtualizer(
+    !settings.isWordWrapEnabled ? rows.length : 0,
+    () => leftScrollRef.current
+  );
 
-  const rightVirtualizer = useVirtualizer({
-    count: !settings.isWordWrapEnabled ? rows.length : 0,
-    getScrollElement: () => rightScrollRef.current,
-    estimateSize: () => 24,
-    overscan: 10
-  });
+  const rightVirtualizer = useDiffVirtualizer(
+    !settings.isWordWrapEnabled ? rows.length : 0,
+    () => rightScrollRef.current
+  );
 
   if (!comparisonResult) {
     return null;
@@ -140,7 +135,7 @@ export function SplitView() {
       >
         <div className={clsx("relative", containerWidthClass)} style={{ height: `${leftVirtualizer.getTotalSize()}px`, ...minWidthStyle }}>
           {leftVirtualizer.getVirtualItems().map((virtualRow: VirtualItem) => {
-            const row = rows[virtualRow.index];
+             const row = rows[virtualRow.index];
             return (
               <SplitRow
                 key={virtualRow.key}

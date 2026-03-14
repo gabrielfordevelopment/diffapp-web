@@ -1,12 +1,13 @@
 "use client";
 
 import { useRef, useState, useMemo } from "react";
-import { useVirtualizer, VirtualItem } from "@tanstack/react-virtual";
+import { VirtualItem } from "@tanstack/react-virtual";
 import { useEditorStore } from "@/store/useEditorStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { getBlockColorClass } from "@/utils/diffHelpers";
 import { BlockType, DiffChangeType } from "@/types/diff";
 import { UnifiedRow, UnifiedRowData } from "./UnifiedRow";
+import { useDiffVirtualizer } from "@/hooks/useDiffVirtualizer";
 import clsx from "clsx";
 
 export function UnifiedView() {
@@ -64,6 +65,7 @@ export function UnifiedView() {
         });
       } else {
         const maxLines = Math.max(block.oldLines.length, block.newLines.length);
+
         for (let idx = 0; idx < maxLines; idx++) {
           const oldLine = block.oldLines[idx];
           const newLine = block.newLines[idx];
@@ -71,6 +73,7 @@ export function UnifiedView() {
           const isAdded = block.kind === BlockType.Added;
 
           let bgClass = "bg-transparent";
+
           if (isRemoved) bgClass = getBlockColorClass(BlockType.Removed, "old", block.isWhitespaceChange, settings.ignoreWhitespace);
           if (isAdded) bgClass = getBlockColorClass(BlockType.Added, "new", block.isWhitespaceChange, settings.ignoreWhitespace);
 
@@ -92,6 +95,7 @@ export function UnifiedView() {
       }
 
       const len = blockRows.length;
+
       blockRows.forEach((r, i) => {
         result.push({
           ...r,
@@ -129,12 +133,10 @@ export function UnifiedView() {
     return max;
   }, [comparisonResult, settings.isWordWrapEnabled, rows]);
 
-  const unifiedVirtualizer = useVirtualizer({
-    count: rows.length,
-    getScrollElement: () => unifiedScrollRef.current,
-    estimateSize: () => 24,
-    overscan: 10
-  });
+  const unifiedVirtualizer = useDiffVirtualizer(
+    rows.length,
+    () => unifiedScrollRef.current
+  );
 
   if (!comparisonResult) {
     return null;
