@@ -2,6 +2,7 @@
 
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight, MdKeyboardArrowUp, MdTune } from "react-icons/md";
 import { useEditorStore } from "@/store/useEditorStore";
+import { useEditorUIStore } from "@/store/useEditorUIStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { OptionsView } from "./OptionsView";
 import { InputView } from "./InputView";
@@ -9,7 +10,8 @@ import { ComparisonView } from "@/components/diff/ComparisonView";
 import clsx from "clsx";
 
 export function EditorView() {
-  const { isInputExpanded, toggleInputPanel, comparisonResult } = useEditorStore();
+  const { comparisonResult } = useEditorStore();
+  const { isInputExpanded, toggleInputPanel } = useEditorUIStore();
   const { settings, updateSettings } = useSettingsStore();
 
   const hasResult = comparisonResult && comparisonResult.blocks.length > 0;

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useEditorStore } from "@/store/useEditorStore";
+import { useEditorUIStore } from "@/store/useEditorUIStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { ViewMode } from "@/types/settings";
 import { ComparisonToolbar } from "./ComparisonToolbar";
@@ -11,7 +12,8 @@ import { DiffMinimap } from "./DiffMinimap";
 import clsx from "clsx";
 
 export function ComparisonView() {
-  const { comparisonResult, leftText, rightText, compare, selectBlock, isInputExpanded } = useEditorStore();
+  const { comparisonResult, leftText, rightText, compare, selectBlock } = useEditorStore();
+  const { isInputExpanded } = useEditorUIStore();
   const { settings } = useSettingsStore();
 
   const storeRefs = useRef({ leftText, rightText, compare, settings, selectBlock });
@@ -32,7 +34,7 @@ export function ComparisonView() {
 
   const handleSegmentClick = (blockId: string, offsetPct: number) => {
     selectBlock(blockId);
-    
+
     const container = document.getElementById("diff-container");
     if (container) {
       const scrollArea = container.querySelector(".custom-scrollbar");

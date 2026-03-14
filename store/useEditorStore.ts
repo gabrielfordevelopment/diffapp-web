@@ -5,13 +5,12 @@ import { MergeDirection } from "@/types/ui";
 import { ComparisonService } from "@/services/comparisonService";
 import { MergeService } from "@/services/mergeService";
 import { HistoryService } from "@/services/historyService";
+import { useEditorUIStore } from "@/store/useEditorUIStore";
 
 interface EditorState {
   leftText: string;
   rightText: string;
   comparisonResult: ComparisonResult | null;
-  isInputExpanded: boolean;
-  isComparing: boolean;
   setLeftText: (text: string) => void;
   setRightText: (text: string) => void;
   swapTexts: (settings: CompareSettings) => void;
@@ -19,7 +18,6 @@ interface EditorState {
   compare: (settings: CompareSettings, saveToHistory: boolean, preserveInputState?: boolean) => Promise<void>;
   selectBlock: (blockId: string | null) => void;
   mergeBlock: (block: ChangeBlock, direction: MergeDirection, settings: CompareSettings) => void;
-  toggleInputPanel: () => void;
   loadFromHistory: (left: string, right: string, settings: CompareSettings) => Promise<void>;
 }
 
@@ -27,8 +25,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   leftText: "",
   rightText: "",
   comparisonResult: null,
-  isInputExpanded: true,
-  isComparing: false,
 
   setLeftText: (text: string) => set({ leftText: text }),
 
@@ -47,26 +43,24 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     set({
       leftText: "",
       rightText: "",
-      comparisonResult: null,
-      isInputExpanded: true
+      comparisonResult: null
     });
-  },
-
-  toggleInputPanel: () => {
-    set((state) => ({ isInputExpanded: !state.isInputExpanded }));
+    useEditorUIStore.getState().setIsInputExpanded(true);
   },
 
   compare: async (settings: CompareSettings, saveToHistory: boolean, preserveInputState: boolean = false) => {
-    const { leftText, rightText, isInputExpanded } = get();
+    const { leftText, rightText } = get();
+    const uiStore = useEditorUIStore.getState();
 
-    set({ isComparing: true });
+    uiStore.setIsComparing(true);
     const result = ComparisonService.compare(leftText, rightText, settings);
 
     set({
-      comparisonResult: result,
-      isInputExpanded: preserveInputState ? isInputExpanded : false,
-      isComparing: false
+      comparisonResult: result
     });
+    
+    uiStore.setIsInputExpanded(preserveInputState ? uiStore.isInputExpanded : false);
+    uiStore.setIsComparing(false);
 
     if (saveToHistory && (leftText || rightText)) {
       await HistoryService.addAsync(leftText, rightText);
@@ -83,6 +77,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       ...b,
       isSelected: b.id === blockId
     }));
+
     set({
       comparisonResult: { blocks: updatedBlocks }
     });
