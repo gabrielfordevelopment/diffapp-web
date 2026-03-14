@@ -5,6 +5,7 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { useEditorStore } from "@/store/useEditorStore";
 import { useCompareActions } from "@/hooks/useCompareActions";
 import { originalTestText, modifiedTestText } from "@/utils/testData";
+import { UI_CONSTANTS } from "@/config/constants";
 import clsx from "clsx";
 
 export function OptionsView() {
@@ -65,8 +66,8 @@ export function OptionsView() {
           </div>
           <input
             type="range"
-            min="10"
-            max="24"
+            min={UI_CONSTANTS.MIN_FONT_SIZE}
+            max={UI_CONSTANTS.MAX_FONT_SIZE}
             step="1"
             value={settings.fontSize}
             onChange={(e) => updateSettings({ fontSize: parseInt(e.target.value, 10) })}
