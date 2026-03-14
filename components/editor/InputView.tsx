@@ -2,10 +2,12 @@
 
 import { MdDescription, MdSearch, MdKeyboardArrowDown } from "react-icons/md";
 import { useEditorStore } from "@/store/useEditorStore";
+import { useEditorUIStore } from "@/store/useEditorUIStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 
 export function InputView() {
-  const { leftText, rightText, setLeftText, setRightText, compare, toggleInputPanel } = useEditorStore();
+  const { leftText, rightText, setLeftText, setRightText, compare } = useEditorStore();
+  const { toggleInputPanel } = useEditorUIStore();
   const settings = useSettingsStore((state) => state.settings);
 
   const handleCompare = () => {
