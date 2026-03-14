@@ -1,12 +1,13 @@
 import Dexie, { type Table } from "dexie";
 import { DiffHistoryItem } from "@/types/history";
+import { DB_CONFIG } from "@/config/constants";
 
 export class DiffAppDatabase extends Dexie {
   history!: Table<DiffHistoryItem, string>;
 
   constructor() {
-    super("DiffAppDatabase");
-    this.version(1).stores({
+    super(DB_CONFIG.NAME);
+    this.version(DB_CONFIG.VERSION).stores({
       history: "id, createdAt, isBookmarked"
     });
   }

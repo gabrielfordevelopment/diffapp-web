@@ -1,16 +1,6 @@
-import { AppSettings, PrecisionLevel, ViewMode } from "@/types/settings";
-
-const SETTINGS_KEY = "diffapp_settings";
-
-const defaultSettings: AppSettings = {
-  isWordWrapEnabled: true,
-  ignoreWhitespace: false,
-  precision: PrecisionLevel.Word,
-  viewMode: ViewMode.Split,
-  fontSize: 13.0,
-  isOptionsPanelOpen: true,
-  theme: "light"
-};
+import { AppSettings } from "@/types/settings";
+import { defaultSettings } from "@/config/defaults";
+import { STORAGE_KEYS } from "@/config/constants";
 
 export class SettingsService {
   public static loadSettings(): AppSettings {
@@ -19,7 +9,7 @@ export class SettingsService {
     }
 
     try {
-      const json = localStorage.getItem(SETTINGS_KEY);
+      const json = localStorage.getItem(STORAGE_KEYS.SETTINGS);
       if (json) {
         const parsed = JSON.parse(json) as AppSettings;
         return { ...defaultSettings, ...parsed };
@@ -37,7 +27,7 @@ export class SettingsService {
 
     try {
       const json = JSON.stringify(settings);
-      localStorage.setItem(SETTINGS_KEY, json);
+      localStorage.setItem(STORAGE_KEYS.SETTINGS, json);
     } catch {
     }
   }

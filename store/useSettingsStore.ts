@@ -1,6 +1,7 @@
 import { create } from "zustand";
-import { AppSettings, PrecisionLevel, ViewMode } from "@/types/settings";
+import { AppSettings } from "@/types/settings";
 import { SettingsService } from "@/services/settingsService";
+import { defaultSettings } from "@/config/defaults";
 
 interface SettingsState {
   settings: AppSettings;
@@ -10,15 +11,7 @@ interface SettingsState {
 }
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
-  settings: {
-    isWordWrapEnabled: true,
-    ignoreWhitespace: false,
-    precision: PrecisionLevel.Word,
-    viewMode: ViewMode.Split,
-    fontSize: 13.0,
-    isOptionsPanelOpen: true,
-    theme: "light"
-  },
+  settings: defaultSettings,
   loadSettings: () => {
     const loaded = SettingsService.loadSettings();
     set({ settings: loaded });
