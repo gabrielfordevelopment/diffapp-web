@@ -1,10 +1,11 @@
 import React, { memo } from "react";
 import { VirtualItem } from "@tanstack/react-virtual";
-import { MdEast, MdWest, MdClose } from "react-icons/md";
 import { ChangeBlock, DiffChangeType } from "@/types/diff";
 import { MergeDirection } from "@/types/ui";
 import { AppSettings } from "@/types/settings";
 import { getBlockColorClass, getFragmentColorClass } from "@/utils/diffHelpers";
+import { getRowContainerClass, getWordWrapClass } from "@/utils/uiHelpers";
+import { RowControls } from "./RowControls";
 import clsx from "clsx";
 
 export interface SplitRowData {
@@ -33,15 +34,12 @@ interface SplitRowProps {
 
 export const SplitRow = memo(({ row, virtualRow, settings, hoveredBlockId, setHoveredBlockId, selectBlock, mergeBlock, selectionSide, setSelectionSide, renderMode, measureRef }: SplitRowProps) => {
   const isHovered = hoveredBlockId === row.block.id && row.isSelectable && !row.block.isSelected;
-  const wordWrapClass = settings.isWordWrapEnabled ? "break-all whitespace-pre-wrap w-full" : "whitespace-pre";
-
-  const containerClass = clsx(
-    "flex flex-col w-full relative",
-    row.isSelectable && "cursor-pointer",
-    row.block.isSelected && row.isSelectable && "bg-bg-selected"
-  );
+  const wordWrapClass = getWordWrapClass(settings.isWordWrapEnabled, renderMode === "wrap" ? "w-full" : "");
+  const containerClass = getRowContainerClass(row.isSelectable, row.block.isSelected || false);
 
   if (row.type === "controls") {
+    const layoutMode = renderMode === "wrap" ? "split-wrap" : renderMode === "left" ? "split-left" : "split-right";
+    
     return (
       <div
         data-index={virtualRow.index}
@@ -49,43 +47,13 @@ export const SplitRow = memo(({ row, virtualRow, settings, hoveredBlockId, setHo
         className="absolute top-0 left-0 w-full"
         style={{ transform: `translateY(${virtualRow.start}px)` }}
       >
-        <div className={clsx("flex items-center w-full min-w-full border-t border-accent-primary bg-bg-selected relative h-12 z-20 select-none", renderMode === "wrap" ? "justify-between px-4" : renderMode === "left" ? "justify-end" : "justify-start")}>
-          {renderMode === "wrap" && (
-            <>
-              <div className="flex items-center gap-4 flex-1 justify-end pr-4 border-r border-transparent">
-                <button onClick={(e) => { e.stopPropagation(); mergeBlock(row.block, MergeDirection.LeftToRight, settings); }} className="flex items-center gap-2 rounded bg-danger px-4 py-1.5 text-sm font-semibold text-white hover:bg-danger-hover transition-colors">
-                  <span>Merge</span><MdEast />
-                </button>
-              </div>
-              <button onClick={(e) => { e.stopPropagation(); selectBlock(null); }} className="rounded p-1 text-text-secondary hover:bg-hover-overlay transition-colors shrink-0">
-                <MdClose className="text-xl" />
-              </button>
-              <div className="flex items-center gap-4 flex-1 justify-start pl-4">
-                <button onClick={(e) => { e.stopPropagation(); mergeBlock(row.block, MergeDirection.RightToLeft, settings); }} className="flex items-center gap-2 rounded bg-success px-4 py-1.5 text-sm font-semibold text-white hover:bg-success-hover transition-colors">
-                  <MdWest /><span>Merge</span>
-                </button>
-              </div>
-            </>
-          )}
-          {renderMode === "left" && (
-            <div className="sticky right-0 flex items-center justify-end gap-4 px-4 h-full">
-              <button onClick={(e) => { e.stopPropagation(); mergeBlock(row.block, MergeDirection.LeftToRight, settings); }} className="flex items-center gap-2 rounded bg-danger px-4 py-1.5 text-sm font-semibold text-white hover:bg-danger-hover transition-colors">
-                <span>Merge</span><MdEast />
-              </button>
-              <button onClick={(e) => { e.stopPropagation(); selectBlock(null); }} className="rounded p-1 text-text-secondary hover:bg-hover-overlay transition-colors">
-                <MdClose className="text-xl" />
-              </button>
-            </div>
-          )}
-          {renderMode === "right" && (
-            <div className="sticky left-0 flex items-center justify-start px-4 h-full">
-              <button onClick={(e) => { e.stopPropagation(); mergeBlock(row.block, MergeDirection.RightToLeft, settings); }} className="flex items-center gap-2 rounded bg-success px-4 py-1.5 text-sm font-semibold text-white hover:bg-success-hover transition-colors">
-                <MdWest /><span>Merge</span>
-              </button>
-            </div>
-          )}
-          <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent-primary z-20 pointer-events-none" />
-        </div>
+        <RowControls 
+          block={row.block} 
+          settings={settings} 
+          layout={layoutMode} 
+          selectBlock={selectBlock} 
+          mergeBlock={mergeBlock} 
+        />
       </div>
     );
   }
@@ -126,7 +94,7 @@ export const SplitRow = memo(({ row, virtualRow, settings, hoveredBlockId, setHo
               </div>
             </div>
           )}
-          
+
           {(renderMode === "wrap" || renderMode === "right") && (
             <div
               onMouseDown={() => setSelectionSide("right")}

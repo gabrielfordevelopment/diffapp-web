@@ -1,10 +1,11 @@
 import React, { memo } from "react";
 import { VirtualItem } from "@tanstack/react-virtual";
-import { MdEast, MdWest, MdClose } from "react-icons/md";
 import { ChangeBlock, TextFragment } from "@/types/diff";
 import { MergeDirection } from "@/types/ui";
 import { AppSettings } from "@/types/settings";
 import { getFragmentColorClass } from "@/utils/diffHelpers";
+import { getRowContainerClass, getWordWrapClass } from "@/utils/uiHelpers";
+import { RowControls } from "./RowControls";
 import clsx from "clsx";
 
 export interface UnifiedLineData {
@@ -39,13 +40,8 @@ interface UnifiedRowProps {
 
 export const UnifiedRow = memo(({ row, virtualRow, settings, hoveredBlockId, setHoveredBlockId, selectBlock, mergeBlock, measureRef }: UnifiedRowProps) => {
   const isHovered = hoveredBlockId === row.block.id && row.isSelectable && !row.block.isSelected;
-  const wordWrapClass = settings.isWordWrapEnabled ? "break-all whitespace-pre-wrap" : "whitespace-pre";
-
-  const containerClass = clsx(
-    "flex flex-col w-full relative",
-    row.isSelectable && "cursor-pointer",
-    row.block.isSelected && row.isSelectable && "bg-bg-selected"
-  );
+  const wordWrapClass = getWordWrapClass(settings.isWordWrapEnabled);
+  const containerClass = getRowContainerClass(row.isSelectable, row.block.isSelected || false);
 
   if (row.type === "controls") {
     return (
@@ -55,31 +51,13 @@ export const UnifiedRow = memo(({ row, virtualRow, settings, hoveredBlockId, set
         className="absolute top-0 left-0 w-full"
         style={{ transform: `translateY(${virtualRow.start}px)` }}
       >
-        <div className="flex items-center justify-center w-full min-w-full border-t border-accent-primary bg-bg-selected relative h-12 z-20 select-none">
-          <div className="sticky left-1/2 -translate-x-1/2 flex items-center justify-center gap-4 px-4 h-full w-max">
-            <button
-              onClick={(e) => { e.stopPropagation(); mergeBlock(row.block, MergeDirection.LeftToRight, settings); }}
-              className="flex items-center gap-2 rounded bg-danger px-4 py-1.5 text-sm font-semibold text-white hover:bg-danger-hover transition-colors"
-            >
-              <span>Merge</span>
-              <MdEast />
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); selectBlock(null); }}
-              className="rounded p-1 text-text-secondary hover:bg-hover-overlay transition-colors mx-2"
-            >
-              <MdClose className="text-xl" />
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); mergeBlock(row.block, MergeDirection.RightToLeft, settings); }}
-              className="flex items-center gap-2 rounded bg-success px-4 py-1.5 text-sm font-semibold text-white hover:bg-success-hover transition-colors"
-            >
-              <MdWest />
-              <span>Merge</span>
-            </button>
-          </div>
-          <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent-primary z-20 pointer-events-none" />
-        </div>
+        <RowControls 
+          block={row.block} 
+          settings={settings} 
+          layout="unified" 
+          selectBlock={selectBlock} 
+          mergeBlock={mergeBlock} 
+        />
       </div>
     );
   }
