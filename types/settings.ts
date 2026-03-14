@@ -19,6 +19,5 @@ export interface AppSettings {
   precision: PrecisionLevel;
   viewMode: ViewMode;
   fontSize: number;
-  isOptionsPanelOpen: boolean;
   theme: string;
 }

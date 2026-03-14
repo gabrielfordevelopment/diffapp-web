@@ -33,11 +33,6 @@ export class SettingsService {
   }
 
   public static resetToDefaults(): void {
-    const currentSettings = this.loadSettings();
-    const resetSettings: AppSettings = {
-      ...defaultSettings,
-      isOptionsPanelOpen: currentSettings.isOptionsPanelOpen
-    };
-    this.saveSettings(resetSettings);
+    this.saveSettings(defaultSettings);
   }
 }

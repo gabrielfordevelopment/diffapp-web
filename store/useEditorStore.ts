@@ -4,8 +4,6 @@ import { CompareSettings } from "@/types/settings";
 import { MergeDirection } from "@/types/ui";
 import { ComparisonService } from "@/services/comparisonService";
 import { MergeService } from "@/services/mergeService";
-import { HistoryService } from "@/services/historyService";
-import { useEditorUIStore } from "@/store/useEditorUIStore";
 
 interface EditorState {
   leftText: string;
@@ -13,12 +11,12 @@ interface EditorState {
   comparisonResult: ComparisonResult | null;
   setLeftText: (text: string) => void;
   setRightText: (text: string) => void;
-  swapTexts: (settings: CompareSettings) => void;
+  swapTexts: () => void;
   clearContent: () => void;
-  compare: (settings: CompareSettings, saveToHistory: boolean, preserveInputState?: boolean) => Promise<void>;
+  compare: (settings: CompareSettings) => void;
   selectBlock: (blockId: string | null) => void;
   mergeBlock: (block: ChangeBlock, direction: MergeDirection, settings: CompareSettings) => void;
-  loadFromHistory: (left: string, right: string, settings: CompareSettings) => Promise<void>;
+  loadFromHistory: (left: string, right: string, settings: CompareSettings) => void;
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
@@ -30,13 +28,9 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
   setRightText: (text: string) => set({ rightText: text }),
 
-  swapTexts: (settings: CompareSettings) => {
-    const { leftText, rightText, comparisonResult } = get();
+  swapTexts: () => {
+    const { leftText, rightText } = get();
     set({ leftText: rightText, rightText: leftText });
-
-    if (comparisonResult) {
-      get().compare(settings, true, true);
-    }
   },
 
   clearContent: () => {
@@ -45,26 +39,14 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       rightText: "",
       comparisonResult: null
     });
-    useEditorUIStore.getState().setIsInputExpanded(true);
   },
 
-  compare: async (settings: CompareSettings, saveToHistory: boolean, preserveInputState: boolean = false) => {
+  compare: (settings: CompareSettings) => {
     const { leftText, rightText } = get();
-    const uiStore = useEditorUIStore.getState();
-
-    uiStore.setIsComparing(true);
     const result = ComparisonService.compare(leftText, rightText, settings);
-
     set({
       comparisonResult: result
     });
-    
-    uiStore.setIsInputExpanded(preserveInputState ? uiStore.isInputExpanded : false);
-    uiStore.setIsComparing(false);
-
-    if (saveToHistory && (leftText || rightText)) {
-      await HistoryService.addAsync(leftText, rightText);
-    }
   },
 
   selectBlock: (blockId: string | null) => {
@@ -95,12 +77,11 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     }
 
     set({ leftText: newLeft, rightText: newRight });
-
-    get().compare(settings, false, true);
+    get().compare(settings);
   },
 
-  loadFromHistory: async (left: string, right: string, settings: CompareSettings) => {
+  loadFromHistory: (left: string, right: string, settings: CompareSettings) => {
     set({ leftText: left, rightText: right });
-    await get().compare(settings, false);
+    get().compare(settings);
   }
 }));

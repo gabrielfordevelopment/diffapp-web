@@ -19,8 +19,8 @@ export function HistoryView() {
     loadHistory();
   }, [loadHistory]);
 
-  const handleRestore = async (original: string, modified: string) => {
-    await loadFromHistory(original, modified, settings);
+  const handleRestore = (original: string, modified: string) => {
+    loadFromHistory(original, modified, settings);
     navigate("editor");
   };
 
@@ -100,7 +100,7 @@ export function HistoryView() {
 
                   <div className="relative flex items-center justify-between">
                     <span className="min-w-[70px] truncate text-xs font-bold text-accent-primary">
-                       {getRelativeTime(item.createdAt)}
+                      {getRelativeTime(item.createdAt)}
                     </span>
 
                     <div className="mx-4 flex flex-1 items-center gap-4 overflow-hidden">

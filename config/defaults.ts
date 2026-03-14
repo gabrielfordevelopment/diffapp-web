@@ -6,6 +6,5 @@ export const defaultSettings: AppSettings = {
   precision: PrecisionLevel.Word,
   viewMode: ViewMode.Split,
   fontSize: 13.0,
-  isOptionsPanelOpen: true,
   theme: "light"
 };

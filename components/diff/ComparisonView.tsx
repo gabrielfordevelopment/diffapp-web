@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useEditorStore } from "@/store/useEditorStore";
 import { useEditorUIStore } from "@/store/useEditorUIStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { useCompareActions } from "@/hooks/useCompareActions";
 import { ViewMode } from "@/types/settings";
 import { ComparisonToolbar } from "./ComparisonToolbar";
 import { SplitView } from "./SplitView";
@@ -12,19 +13,20 @@ import { DiffMinimap } from "./DiffMinimap";
 import clsx from "clsx";
 
 export function ComparisonView() {
-  const { comparisonResult, leftText, rightText, compare, selectBlock } = useEditorStore();
+  const { comparisonResult, leftText, rightText, selectBlock } = useEditorStore();
   const { isInputExpanded } = useEditorUIStore();
   const { settings } = useSettingsStore();
+  const { executeCompare } = useCompareActions();
 
-  const storeRefs = useRef({ leftText, rightText, compare, settings, selectBlock });
+  const storeRefs = useRef({ leftText, rightText, executeCompare, settings, selectBlock });
 
   useEffect(() => {
-    storeRefs.current = { leftText, rightText, compare, settings, selectBlock };
+    storeRefs.current = { leftText, rightText, executeCompare, settings, selectBlock };
   });
 
   useEffect(() => {
     if (storeRefs.current.leftText || storeRefs.current.rightText) {
-      storeRefs.current.compare(storeRefs.current.settings, false, true);
+      storeRefs.current.executeCompare(storeRefs.current.settings, false, true);
     }
   }, [settings.precision]);
 
