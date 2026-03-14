@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useMemo, useEffect } from "react";
+import { useRef, useState, useMemo } from "react";
 import { MdEast, MdWest, MdClose } from "react-icons/md";
 import { useVirtualizer, VirtualItem } from "@tanstack/react-virtual";
 import { useEditorStore } from "@/store/useEditorStore";
@@ -8,6 +8,7 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { getBlockColorClass, getFragmentColorClass } from "@/utils/diffHelpers";
 import { MergeDirection } from "@/types/ui";
 import { BlockType, DiffChangeType, ChangeBlock } from "@/types/diff";
+import { useSyncedScroll } from "@/hooks/useSyncedScroll";
 import clsx from "clsx";
 
 interface RowData {
@@ -23,13 +24,9 @@ interface RowData {
 export function SplitView() {
   const { comparisonResult, selectBlock, mergeBlock } = useEditorStore();
   const { settings } = useSettingsStore();
-
-  const leftScrollRef = useRef<HTMLDivElement>(null);
-  const rightScrollRef = useRef<HTMLDivElement>(null);
+  
   const wrapScrollRef = useRef<HTMLDivElement>(null);
-
-  const isSyncingScroll = useRef<"left" | "right" | null>(null);
-  const syncTimeout = useRef<NodeJS.Timeout | null>(null);
+  const { leftScrollRef, rightScrollRef, handleLeftScroll, handleRightScroll } = useSyncedScroll();
 
   const [hoveredBlockId, setHoveredBlockId] = useState<string | null>(null);
   const [selectionSide, setSelectionSide] = useState<"left" | "right" | null>(null);
@@ -75,7 +72,7 @@ export function SplitView() {
   const maxLineChars = useMemo(() => {
     let max = 0;
     if (!comparisonResult || settings.isWordWrapEnabled) return max;
-    
+
     comparisonResult.blocks.forEach((block) => {
       block.oldLines.forEach((line) => {
         const len = line.fragments.reduce((acc, f) => acc + f.text.length, 0);
@@ -109,32 +106,6 @@ export function SplitView() {
     estimateSize: () => 24,
     overscan: 10
   });
-
-  const handleLeftScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    if (isSyncingScroll.current === "right") return;
-    isSyncingScroll.current = "left";
-    if (rightScrollRef.current) {
-      rightScrollRef.current.scrollTop = e.currentTarget.scrollTop;
-      rightScrollRef.current.scrollLeft = e.currentTarget.scrollLeft;
-    }
-    if (syncTimeout.current) clearTimeout(syncTimeout.current);
-    syncTimeout.current = setTimeout(() => {
-      isSyncingScroll.current = null;
-    }, 50);
-  };
-
-  const handleRightScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    if (isSyncingScroll.current === "left") return;
-    isSyncingScroll.current = "right";
-    if (leftScrollRef.current) {
-      leftScrollRef.current.scrollTop = e.currentTarget.scrollTop;
-      leftScrollRef.current.scrollLeft = e.currentTarget.scrollLeft;
-    }
-    if (syncTimeout.current) clearTimeout(syncTimeout.current);
-    syncTimeout.current = setTimeout(() => {
-      isSyncingScroll.current = null;
-    }, 50);
-  };
 
   if (!comparisonResult) {
     return null;
@@ -172,7 +143,10 @@ export function SplitView() {
                   <div className="flex items-center justify-between w-full border-t border-accent-primary bg-bg-selected relative h-12 z-20 px-4 select-none">
                     <div className="flex items-center gap-4 flex-1 justify-end pr-4 border-r border-transparent">
                       <button
-                        onClick={(e) => { e.stopPropagation(); mergeBlock(row.block, MergeDirection.LeftToRight, settings); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          mergeBlock(row.block, MergeDirection.LeftToRight, settings);
+                        }}
                         className="flex items-center gap-2 rounded bg-danger px-4 py-1.5 text-sm font-semibold text-white hover:bg-danger-hover transition-colors"
                       >
                         <span>Merge</span>
@@ -180,14 +154,20 @@ export function SplitView() {
                       </button>
                     </div>
                     <button
-                      onClick={(e) => { e.stopPropagation(); selectBlock(null); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        selectBlock(null);
+                      }}
                       className="rounded p-1 text-text-secondary hover:bg-hover-overlay transition-colors shrink-0"
                     >
                       <MdClose className="text-xl" />
                     </button>
                     <div className="flex items-center gap-4 flex-1 justify-start pl-4">
                       <button
-                        onClick={(e) => { e.stopPropagation(); mergeBlock(row.block, MergeDirection.RightToLeft, settings); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          mergeBlock(row.block, MergeDirection.RightToLeft, settings);
+                        }}
                         className="flex items-center gap-2 rounded bg-success px-4 py-1.5 text-sm font-semibold text-white hover:bg-success-hover transition-colors"
                       >
                         <MdWest />
@@ -283,14 +263,20 @@ export function SplitView() {
                   <div className="flex items-center justify-end w-full min-w-full border-t border-accent-primary bg-bg-selected relative h-12 z-20 select-none">
                     <div className="sticky right-0 flex items-center justify-end gap-4 px-4 h-full">
                       <button
-                        onClick={(e) => { e.stopPropagation(); mergeBlock(row.block, MergeDirection.LeftToRight, settings); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          mergeBlock(row.block, MergeDirection.LeftToRight, settings);
+                        }}
                         className="flex items-center gap-2 rounded bg-danger px-4 py-1.5 text-sm font-semibold text-white hover:bg-danger-hover transition-colors"
                       >
                         <span>Merge</span>
                         <MdEast />
                       </button>
                       <button
-                        onClick={(e) => { e.stopPropagation(); selectBlock(null); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          selectBlock(null);
+                        }}
                         className="rounded p-1 text-text-secondary hover:bg-hover-overlay transition-colors"
                       >
                         <MdClose className="text-xl" />
@@ -362,7 +348,10 @@ export function SplitView() {
                   <div className="flex items-center justify-start w-full min-w-full border-t border-accent-primary bg-bg-selected relative h-12 z-20 select-none">
                     <div className="sticky left-0 flex items-center justify-start px-4 h-full">
                       <button
-                        onClick={(e) => { e.stopPropagation(); mergeBlock(row.block, MergeDirection.RightToLeft, settings); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          mergeBlock(row.block, MergeDirection.RightToLeft, settings);
+                        }}
                         className="flex items-center gap-2 rounded bg-success px-4 py-1.5 text-sm font-semibold text-white hover:bg-success-hover transition-colors"
                       >
                         <MdWest />
