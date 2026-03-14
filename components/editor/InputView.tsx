@@ -4,15 +4,17 @@ import { MdDescription, MdSearch, MdKeyboardArrowDown } from "react-icons/md";
 import { useEditorStore } from "@/store/useEditorStore";
 import { useEditorUIStore } from "@/store/useEditorUIStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { useCompareActions } from "@/hooks/useCompareActions";
 
 export function InputView() {
-  const { leftText, rightText, setLeftText, setRightText, compare } = useEditorStore();
+  const { leftText, rightText, setLeftText, setRightText } = useEditorStore();
   const { toggleInputPanel } = useEditorUIStore();
   const settings = useSettingsStore((state) => state.settings);
+  const { executeCompare } = useCompareActions();
 
   const handleCompare = () => {
     if (leftText || rightText) {
-      compare(settings, true);
+      executeCompare(settings, true);
     }
   };
 

@@ -3,17 +3,19 @@
 import { PrecisionLevel, ViewMode } from "@/types/settings";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useEditorStore } from "@/store/useEditorStore";
+import { useCompareActions } from "@/hooks/useCompareActions";
 import { originalTestText, modifiedTestText } from "@/utils/testData";
 import clsx from "clsx";
 
 export function OptionsView() {
   const { settings, updateSettings, resetToDefaults } = useSettingsStore();
-  const { setLeftText, setRightText, compare } = useEditorStore();
+  const { setLeftText, setRightText } = useEditorStore();
+  const { executeCompare } = useCompareActions();
 
   const handleLoadTestData = () => {
     setLeftText(originalTestText);
     setRightText(modifiedTestText);
-    compare(settings, true, false);
+    executeCompare(settings, true, false);
   };
 
   return (

@@ -11,8 +11,8 @@ import clsx from "clsx";
 
 export function EditorView() {
   const { comparisonResult } = useEditorStore();
-  const { isInputExpanded, toggleInputPanel } = useEditorUIStore();
-  const { settings, updateSettings } = useSettingsStore();
+  const { isInputExpanded, toggleInputPanel, isOptionsPanelOpen, setIsOptionsPanelOpen } = useEditorUIStore();
+  const { settings } = useSettingsStore();
 
   const hasResult = comparisonResult && comparisonResult.blocks.length > 0;
 
@@ -21,7 +21,7 @@ export function EditorView() {
       <div
         className={clsx(
           "flex flex-col bg-bg-secondary transition-all duration-300 overflow-hidden h-full shrink-0 z-10",
-          settings.isOptionsPanelOpen ? "w-64 border-r border-border-default" : "w-0 border-r-0"
+          isOptionsPanelOpen ? "w-64 border-r border-border-default" : "w-0 border-r-0"
         )}
       >
         <div className="flex w-64 flex-col h-full shrink-0">
@@ -31,7 +31,7 @@ export function EditorView() {
               <h2 className="text-base font-bold text-text-primary">Options</h2>
             </div>
             <button
-              onClick={() => updateSettings({ isOptionsPanelOpen: false })}
+              onClick={() => setIsOptionsPanelOpen(false)}
               className="flex items-center justify-center rounded p-1 text-text-secondary hover:bg-hover-overlay hover:text-text-primary transition-colors"
               title="Close Options"
             >
@@ -45,9 +45,9 @@ export function EditorView() {
       </div>
 
       <div className="flex flex-1 flex-col overflow-hidden relative z-0">
-        {!settings.isOptionsPanelOpen && (
+        {!isOptionsPanelOpen && (
           <button
-            onClick={() => updateSettings({ isOptionsPanelOpen: true })}
+            onClick={() => setIsOptionsPanelOpen(true)}
             className="absolute left-0 top-6 z-30 flex h-12 w-6 items-center justify-center rounded-r-md bg-accent-primary text-white shadow-md hover:bg-accent-hover transition-colors"
             title="Open Options"
           >

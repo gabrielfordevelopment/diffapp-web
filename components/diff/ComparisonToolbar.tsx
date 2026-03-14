@@ -4,11 +4,13 @@ import { useState, useMemo } from "react";
 import { MdContentCopy, MdSwapHoriz, MdDelete, MdDescription, MdCheck } from "react-icons/md";
 import { useEditorStore } from "@/store/useEditorStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { useCompareActions } from "@/hooks/useCompareActions";
 import { calculateStats } from "@/utils/diffHelpers";
 
 export function ComparisonToolbar() {
-  const { comparisonResult, leftText, rightText, swapTexts, clearContent } = useEditorStore();
+  const { comparisonResult, leftText, rightText } = useEditorStore();
   const { settings } = useSettingsStore();
+  const { executeClear, executeSwap } = useCompareActions();
 
   const [copiedSide, setCopiedSide] = useState<"left" | "right" | null>(null);
 
@@ -17,6 +19,7 @@ export function ComparisonToolbar() {
   }, [comparisonResult, settings.ignoreWhitespace]);
 
   const leftLineCount = useMemo(() => leftText ? leftText.split(/\r?\n/).length : 0, [leftText]);
+
   const rightLineCount = useMemo(() => rightText ? rightText.split(/\r?\n/).length : 0, [rightText]);
 
   const handleCopy = (text: string, side: "left" | "right") => {
@@ -38,6 +41,7 @@ export function ComparisonToolbar() {
 
         <div className="flex items-center gap-4">
           <span className="text-sm text-text-secondary">{leftLineCount} lines</span>
+   
           <button
             onClick={() => handleCopy(leftText, "left")}
             disabled={copiedSide === "left" || !leftText}
@@ -59,7 +63,7 @@ export function ComparisonToolbar() {
         </div>
       </div>
 
-      <button onClick={() => swapTexts(settings)} className="mx-6 text-2xl text-accent-primary hover:bg-hover-overlay p-1.5 rounded" title="Swap Sides">
+      <button onClick={() => executeSwap(settings)} className="mx-6 text-2xl text-accent-primary hover:bg-hover-overlay p-1.5 rounded" title="Swap Sides">
         <MdSwapHoriz />
       </button>
 
@@ -70,6 +74,7 @@ export function ComparisonToolbar() {
         </div>
         <div className="flex items-center gap-4">
           <span className="text-sm text-text-secondary">{rightLineCount} lines</span>
+         
           <button
             onClick={() => handleCopy(rightText, "right")}
             disabled={copiedSide === "right" || !rightText}
@@ -89,7 +94,7 @@ export function ComparisonToolbar() {
             )}
           </button>
           <div className="w-px h-6 bg-border-default mx-2" />
-          <button onClick={clearContent} className="flex items-center gap-1 bg-danger text-white px-3 py-1.5 rounded text-sm font-semibold hover:bg-danger-hover transition-colors">
+          <button onClick={executeClear} className="flex items-center gap-1 bg-danger text-white px-3 py-1.5 rounded text-sm font-semibold hover:bg-danger-hover transition-colors">
             <MdDelete className="text-lg" />
             Clear
           </button>
